@@ -3,7 +3,7 @@ package com.clase.oneroomproject.client;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.gwt.GwtApplication;
 import com.badlogic.gdx.backends.gwt.GwtApplicationConfiguration;
-import com.clase.oneroomproject.MainGame;
+import com.clase.oneroomproject.vista.MainGame;
 
 public class HtmlLauncher extends GwtApplication {
 
