@@ -13,20 +13,19 @@ public class MainGame extends Game {
 	 * SpriteBatch para dibujar texturas
 	 */
 	SpriteBatch batch;
-
 	/**
 	 * Pantalla de carga del juego
 	 */
 	CargandoScreen cargando;
+	/**
+	 * Menú principal del juego
+	 */
+	MainMenuScreen menu;
 	AssetManager assetManager;
 	
 	@Override
 	public void create () {
-		assetManager=new AssetManager();
-		batch = new SpriteBatch();
-		cargando = new CargandoScreen(this);
-		System.out.println("Antes de cargando");
-		setScreen(cargando);
+		init();
 	}
 
 	@Override
@@ -45,5 +44,19 @@ public class MainGame extends Game {
 
 	public SpriteBatch getBatch() {
 		return batch;
+	}
+	private void init(){
+		try{
+			batch = new SpriteBatch();
+			//Inicialización de las Screen del juego
+			cargando = new CargandoScreen(this);
+			menu = new MainMenuScreen(this);
+			System.out.println("Antes de cargando");
+			setScreen(menu);
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+
+
 	}
 }

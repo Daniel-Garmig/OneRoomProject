@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 
-public class CargandoScreen extends AbstractScreen {
+public class CargandoScreen implements Screen {
     /**
      * Dependencia de la clase Game para poder acceder a ella
      */
@@ -20,13 +20,23 @@ public class CargandoScreen extends AbstractScreen {
      */
     Texture carganadoFondo;
     /**
+     * Cámara
+     */
+    OrthographicCamera camera;
+    /**
      * Constructor de la clase con la inicialización de las propiedades del objeto
      * @param game Tipo MainGame
      */
     public CargandoScreen(MainGame game) {
-        super(game);
+        this.game=game;
+    }
+
+    @Override
+    public void show() {
         batchG = game.getBatch();
         carganadoFondo= new Texture("PruebasAssets\\cargandoFondo.jpg");
+        camera = new OrthographicCamera();
+        camera.setToOrtho(false, 0, 0);
     }
 
     @Override
@@ -60,7 +70,6 @@ public class CargandoScreen extends AbstractScreen {
 
     @Override
     public void dispose() {
-        super.dispose();
         carganadoFondo.dispose();
     }
 }
