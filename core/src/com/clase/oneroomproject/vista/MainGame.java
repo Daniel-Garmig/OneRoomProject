@@ -21,6 +21,10 @@ public class MainGame extends Game {
 	 * Menú principal del juego
 	 */
 	MainMenuScreen menu;
+	/**
+	 * Pantalla del modo Online
+	 */
+	OnlineScreen online;
 	AssetManager assetManager;
 	
 	@Override
@@ -51,6 +55,7 @@ public class MainGame extends Game {
 			//Inicialización de las Screen del juego
 			cargando = new CargandoScreen(this);
 			menu = new MainMenuScreen(this);
+			online = new OnlineScreen(this);
 			System.out.println("Antes de cargando");
 			setScreen(menu);
 		}catch (Exception e){

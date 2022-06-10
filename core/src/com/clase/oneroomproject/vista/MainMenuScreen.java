@@ -21,35 +21,35 @@ public class MainMenuScreen implements Screen {
     /**
      * Dependencia de la clase Game para poder acceder a ella
      */
-    MainGame game;
+    private MainGame game;
     /**
      * SpriteBatch de la clase Game
      */
-    SpriteBatch batchG;
+    private SpriteBatch batchG;
     /**
      * Cámara
      */
-    OrthographicCamera camera;
+    private OrthographicCamera camera;
     /**
      * Stage en el que colocar los componentes
      */
-    Stage stage;
+    private Stage stage;
     /**
      * Botón para empezar a jugar
      */
-    TextButton btnJugar;
+    private TextButton btnJugar;
     /**
      * Bóton para llevarte al modo online
      */
-    TextButton btnOnline;
+    private TextButton btnOnline;
     /**
      * Fondo de la Screen
      */
-    Texture fondo;
+    private Texture fondo;
     /**
      * Skin para darle formato a todos los objetos de Scene2D
      */
-    Skin skin;
+    private Skin skin;
     /**
      * Constructor de la clase
      * @param game Tipo Game
@@ -124,21 +124,23 @@ public class MainMenuScreen implements Screen {
         btnJugar.setPosition(((float) Gdx.graphics.getWidth()/2f)-((float) btnJugar.getWidth()/2f), (float) btnOnline.getY()-50f);
     }
     private void gestionEventos(){
-        btnOnline.addListener(new ChangeListener() {
+        btnJugar.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 //Si el .json no existe entonces cargará por primera vez el juego y creará el json
                 //Por el momento siempre pondrá el mapa
-                /**
-                File f= new File("");
-
+                //Todo Utilizar método del GameManager.loadJson
                 if (true){
-                    game.setScreen(game.online);
+                    game.setScreen(game.mapa);
                 }else{
                     game.setScreen(game.pVez);
                 }
-                 */
-                System.out.println("Funciona");
+            }
+        });
+        btnOnline.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                game.setScreen(online);
             }
         });
     }
