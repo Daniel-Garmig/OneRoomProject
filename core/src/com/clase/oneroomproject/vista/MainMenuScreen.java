@@ -17,7 +17,7 @@ import org.w3c.dom.Text;
 
 import java.io.File;
 
-public class MainMenuScreen implements Screen {
+public class MainMenuScreen implements Screen, StageInterface {
     /**
      * Dependencia de la clase Game para poder acceder a ella
      */
@@ -64,7 +64,7 @@ public class MainMenuScreen implements Screen {
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 0, 0);
         fondo = new Texture("PruebasAssets\\cargandoFondo.jpg");
-        initComponents();
+        initComponentes();
         addComponentes();
         putComponentes();
         gestionEventos();
@@ -105,38 +105,37 @@ public class MainMenuScreen implements Screen {
     public void dispose() {
         stage.dispose();
     }
-    private void initComponents(){
-        skin = new Skin(Gdx.files.internal("C:\\Users\\KingAlfy\\IdeaProjects\\OneRoomProject\\assets\\pruebaSkin\\uiskin.json"));
+
+    @Override
+    public void initComponentes() {
+        skin = new Skin(Gdx.files.internal("pruebaSkin\\uiskin.json"));
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
         btnJugar = new TextButton("Pulsa para jugar", skin);
         btnOnline= new TextButton("Modo Online", skin);
     }
-    private void addComponentes(){
+
+    @Override
+    public void addComponentes(){
         stage.addActor(btnJugar);
         stage.addActor(btnOnline);
     }
-
-    private void putComponentes(){
+    @Override
+    public void putComponentes(){
         btnOnline.setWidth(250f);
         btnJugar.setWidth(250f);
         btnOnline.setPosition(((float) Gdx.graphics.getWidth()/2f)-(btnOnline.getWidth()/2f), ((float) Gdx.graphics.getHeight())-((float) Gdx.graphics.getHeight()/2f));
         btnJugar.setPosition(((float) Gdx.graphics.getWidth()/2f)-((float) btnJugar.getWidth()/2f), (float) btnOnline.getY()-50f);
     }
-    private void gestionEventos(){
+    @Override
+    public void gestionEventos(){
         btnJugar.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 //Si el .json no existe entonces cargará por primera vez el juego y creará el json
                 //Por el momento siempre pondrá el mapa
                 //Todo Utilizar método del GameManager.loadJson
-                /**
-                if (true){
-                    game.setScreen(game.mapa);
-                }else{
-                    game.setScreen(game.pVez);
-                }
-                 */
+                game.setScreen(game.mapa);
             }
         });
         btnOnline.addListener(new ChangeListener() {

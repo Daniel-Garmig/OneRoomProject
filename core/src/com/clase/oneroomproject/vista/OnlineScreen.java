@@ -10,7 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
-public class OnlineScreen implements Screen {
+public class OnlineScreen implements Screen, StageInterface {
     private MainGame game;
     private Stage stage;
     private Skin skin;
@@ -27,7 +27,6 @@ public class OnlineScreen implements Screen {
 
     @Override
     public void show() {
-
         initComponentes();
         addComponentes();
         putComponentes();
@@ -65,31 +64,47 @@ public class OnlineScreen implements Screen {
     public void dispose() {
         stage.dispose();
     }
-
-    private void initComponentes() {
-        skin = new Skin(Gdx.files.internal("C:\\Users\\KingAlfy\\IdeaProjects\\OneRoomProject\\assets\\pruebaSkin\\uiskin.json"));
-        stage = new Stage();
-        Gdx.input.setInputProcessor(stage);
-        txtID = new TextField("Introduce el ID del jugador:", skin);
-        btnAtras = new TextButton("Atras", skin);
-        btnBuscar = new TextButton("Buscar", skin);
-    }
-
-    private void addComponentes() {
-        stage.addActor(txtID);
-        stage.addActor(btnAtras);
-        stage.addActor(btnBuscar);
+    @Override
+    public void initComponentes() {
+        try{
+            skin = new Skin(Gdx.files.internal("pruebaSkin\\uiskin.json"));
+            stage = new Stage();
+            Gdx.input.setInputProcessor(stage);
+            txtID = new TextField("Introduce el ID del jugador:", skin);
+            btnAtras = new TextButton("Atras", skin);
+            btnBuscar = new TextButton("Buscar", skin);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
 
     }
-    private void putComponentes() {
-        txtID.setWidth(250f);
-        btnBuscar.setWidth(125f);
-        btnAtras.setWidth(125f);
-        txtID.setPosition(((float) Gdx.graphics.getWidth()/2f)-(txtID.getWidth()/2f), ((float) Gdx.graphics.getHeight())-((float) Gdx.graphics.getHeight()/2f));
-        btnBuscar.setPosition((txtID.getX()+btnBuscar.getWidth()), txtID.getY()-txtID.getHeight());
-        btnAtras.setPosition(btnBuscar.getX()-btnAtras.getWidth(), btnBuscar.getY());
+    @Override
+    public void addComponentes() {
+        try{
+            stage.addActor(txtID);
+            stage.addActor(btnAtras);
+            stage.addActor(btnBuscar);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
     }
-    private void gestionEventos(){
+    @Override
+    public void putComponentes() {
+        try{
+            txtID.setWidth(250f);
+            btnBuscar.setWidth(125f);
+            btnAtras.setWidth(125f);
+            txtID.setPosition(((float) Gdx.graphics.getWidth()/2f)-(txtID.getWidth()/2f), ((float) Gdx.graphics.getHeight())-((float) Gdx.graphics.getHeight()/2f));
+            btnBuscar.setPosition((txtID.getX()+btnBuscar.getWidth()), txtID.getY()-txtID.getHeight());
+            btnAtras.setPosition(btnBuscar.getX()-btnAtras.getWidth(), btnBuscar.getY());
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
+    @Override
+    public void gestionEventos(){
         btnAtras.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {

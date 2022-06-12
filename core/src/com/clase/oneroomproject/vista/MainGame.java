@@ -25,6 +25,10 @@ public class MainGame extends Game {
 	 * Pantalla del modo Online
 	 */
 	OnlineScreen online;
+	/**
+	 * Mapa principal para elegir la sala a la que quiere ir el jugador
+	 */
+	MapaScreen mapa;
 	AssetManager assetManager;
 	
 	@Override
@@ -56,6 +60,7 @@ public class MainGame extends Game {
 			cargando = new CargandoScreen(this);
 			menu = new MainMenuScreen(this);
 			online = new OnlineScreen(this);
+			mapa = new MapaScreen(this);
 			System.out.println("Antes de cargando");
 			setScreen(menu);
 		}catch (Exception e){
