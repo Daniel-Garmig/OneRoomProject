@@ -106,7 +106,7 @@ public class MainMenuScreen implements Screen {
         stage.dispose();
     }
     private void initComponents(){
-        skin = new Skin(Gdx.files.internal("C:\\Users\\KingAlfy\\IdeaProjects\\OneRoomProject\\OneRoomProject\\assets\\pruebaSkin\\uiskin.json"));
+        skin = new Skin(Gdx.files.internal("C:\\Users\\KingAlfy\\IdeaProjects\\OneRoomProject\\assets\\pruebaSkin\\uiskin.json"));
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
         btnJugar = new TextButton("Pulsa para jugar", skin);
@@ -120,7 +120,7 @@ public class MainMenuScreen implements Screen {
     private void putComponentes(){
         btnOnline.setWidth(250f);
         btnJugar.setWidth(250f);
-        btnOnline.setPosition(((float) Gdx.graphics.getWidth()/2f)-(btnOnline.getWidth()/2f), ((float) Gdx.graphics.getHeight())-((float) Gdx.graphics.getHeight()/4));
+        btnOnline.setPosition(((float) Gdx.graphics.getWidth()/2f)-(btnOnline.getWidth()/2f), ((float) Gdx.graphics.getHeight())-((float) Gdx.graphics.getHeight()/2f));
         btnJugar.setPosition(((float) Gdx.graphics.getWidth()/2f)-((float) btnJugar.getWidth()/2f), (float) btnOnline.getY()-50f);
     }
     private void gestionEventos(){
@@ -130,17 +130,19 @@ public class MainMenuScreen implements Screen {
                 //Si el .json no existe entonces cargará por primera vez el juego y creará el json
                 //Por el momento siempre pondrá el mapa
                 //Todo Utilizar método del GameManager.loadJson
+                /**
                 if (true){
                     game.setScreen(game.mapa);
                 }else{
                     game.setScreen(game.pVez);
                 }
+                 */
             }
         });
         btnOnline.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.setScreen(online);
+                game.setScreen(game.online);
             }
         });
     }
