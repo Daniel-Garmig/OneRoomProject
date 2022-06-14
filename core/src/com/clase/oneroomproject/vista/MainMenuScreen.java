@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -135,7 +136,11 @@ public class MainMenuScreen implements Screen, StageInterface {
                 //Si el .json no existe entonces cargará por primera vez el juego y creará el json
                 //Por el momento siempre pondrá el mapa
                 //Todo Utilizar método del GameManager.loadJson
-                game.setScreen(game.mapa);
+                if (true){
+                    game.setScreen(game.loggin);
+                }else{
+                    game.setScreen(game.mapa);
+                }
             }
         });
         btnOnline.addListener(new ChangeListener() {

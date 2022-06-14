@@ -103,6 +103,7 @@ public class MapaScreen implements Screen, StageInterface {
 
     @Override
     public void gestionEventos() {
-
+        //TODO cada btn cargará e iniciará una sala
+        //TODO Si un jugador tiene comprada una sala podrá cargar la información al hacer click sobre ella, sino le aparecera un dialog para comprarla
     }
 }

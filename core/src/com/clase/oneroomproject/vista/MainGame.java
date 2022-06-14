@@ -29,6 +29,10 @@ public class MainGame extends Game {
 	 * Mapa principal para elegir la sala a la que quiere ir el jugador
 	 */
 	MapaScreen mapa;
+	/**
+	 * Pantalla de loggin
+	 */
+	LogginScreen loggin;
 	AssetManager assetManager;
 	
 	@Override
@@ -61,6 +65,7 @@ public class MainGame extends Game {
 			menu = new MainMenuScreen(this);
 			online = new OnlineScreen(this);
 			mapa = new MapaScreen(this);
+			loggin = new LogginScreen(this);
 			System.out.println("Antes de cargando");
 			setScreen(menu);
 		}catch (Exception e){
