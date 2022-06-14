@@ -7,6 +7,7 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.clase.oneroomproject.Modelo.GameManager;
 
 public class MainGame extends Game {
 	/**
@@ -33,7 +34,10 @@ public class MainGame extends Game {
 	 * Pantalla de loggin
 	 */
 	LogginScreen loggin;
-	
+	/**
+	 * Clase api (GameManager)
+	 */
+	GameManager gm = GameManager.getInstance();
 	AssetManager assetManager;
 	
 	@Override

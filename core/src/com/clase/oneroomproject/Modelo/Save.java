@@ -10,11 +10,11 @@ import java.util.HashMap;
 public class Save
 {
 
-    int dinero;
+    public int dinero;
 
     /*
         Indica si el jugador tiene comprada esa sala y, por tanto, ha de aparecer/cargarse.
      */
-    HashMap<String, Boolean> ownedRooms;
+    public HashMap<String, Boolean> ownedRooms;
 
 }
