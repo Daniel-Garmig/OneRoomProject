@@ -1,6 +1,8 @@
 sourceCompatibility = 1.7
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
-
+dependencies {
+    implementation 'mysql:mysql-connector-java:8.0.29'
+}
 sourceSets.main.java.srcDirs = [ "src/" ]
 
 eclipse.project.name = appName + "-core"

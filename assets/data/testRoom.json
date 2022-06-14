@@ -1,0 +1,74 @@
+{
+"RoomName": "testRoom",
+"RoomSize": {
+	"x": 8,
+	"y": 5
+},
+"RoomPrice": 250,
+"HuecosDisponibles": 10,
+"CapacidadPorDefecto": {
+	"Abonos": 8,
+	"Refrigeracion": 10,
+	"Electricidad": 5
+},
+"BackGroundTileSet": "testTiles",
+"BackgroundData": [
+	[ 2, 2, 2, 2, 2, 2, 2, 2 ],
+	[ 2, 3, 3, 3, 3, 3, 3, 2 ],
+	[ 2, 3, 3, 3, 3, 3, 3, 2 ],
+	[ 2, 3, 3, 3, 3, 3, 3, 2 ],
+	[ 2, 2, 2, 2, 2, 2, 2, 2 ]
+],
+"MaquinasData": [
+	[
+		null,
+		null,
+		null,
+		null,
+		null,
+		null,
+		null,
+		null
+	],
+	[
+		null,
+		null,
+		null,
+		null,
+		null,
+		null,
+		null,
+		null
+	],
+	[
+		null,
+		null,
+		null,
+		"test_mach2",
+		"base_raspi_mk1",
+		null,
+		null,
+		null
+	],
+	[
+		null,
+		null,
+		null,
+		null,
+		null,
+		null,
+		null,
+		null
+	],
+	[
+		null,
+		null,
+		null,
+		null,
+		null,
+		null,
+		null,
+		null
+	]
+]
+}

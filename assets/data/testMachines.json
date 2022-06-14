@@ -1,0 +1,28 @@
+[datosString
+{
+	"class": "uberelectron.gameSystems.Machine",
+	"machineID": "base_raspi_mk1",
+	"attributes": {
+		"Electricidad": 2,
+		"Refrigeracion": 3
+	},
+	"machineCost": 5,
+	"dineroProducido": 8,
+	"esDeRecursos": false,
+	"tileSetID": "Machine_Set",
+	"tilePos": 3
+},
+{
+	"class": "uberelectron.gameSystems.Machine",
+	"machineID": "test_mach2",
+	"machineCost": 10,
+	"dineroProducido": 15,
+	"attributes": {
+		"Electricidad": 6,
+		"Refrigeracion": 3
+	},
+	"esDeRecursos": true,
+	"tileSetID": "Machine_Set",
+	"tilePos": 4
+}
+]
