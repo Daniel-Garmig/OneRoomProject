@@ -33,6 +33,7 @@ public class MainGame extends Game {
 	 * Pantalla de loggin
 	 */
 	LogginScreen loggin;
+	
 	AssetManager assetManager;
 	
 	@Override

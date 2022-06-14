@@ -6,9 +6,11 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
 public class MapaScreen implements Screen, StageInterface {
 
@@ -105,5 +107,11 @@ public class MapaScreen implements Screen, StageInterface {
     public void gestionEventos() {
         //TODO cada btn cargará e iniciará una sala
         //TODO Si un jugador tiene comprada una sala podrá cargar la información al hacer click sobre ella, sino le aparecera un dialog para comprarla
+        btnSala1.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+
+            }
+        });
     }
 }
