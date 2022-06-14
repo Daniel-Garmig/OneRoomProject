@@ -77,15 +77,7 @@ public class RoomLoader
      */
     public void SaveRoomToJSON(String roomID, FileHandle file)
     {
-        Room rSave = loadedRooms.get(roomID);
-        if(rSave == null)
-        {
-            Gdx.app.error("RoomLoader", "No es posible guardar la Room: " + roomID +
-                    "; ¿Está cargada?");
-            return;
-        }
-
-        String data = loaderJson.toJson(rSave);
+        String data = GetRoomJSON(roomID);
         //FileHandle file = Gdx.files.local(path);
         file.writeString(loaderJson.prettyPrint(data), false);
 
@@ -104,6 +96,48 @@ public class RoomLoader
         }
     }
 
+
+    /**
+     * Carga la sala del usuario indicado desde la BD.
+     * @param roomName ID de la sala que se quiere cargar.
+     * @param username Usuario dueño de esa sala.
+     */
+    public void LoadRoomFromDB(String roomName, String username)
+    {
+        //Obtenemos los datos de la sala desde la DB en formato JSON.
+        String jsonData = dbConnector.GetRoomDataFromDB(roomName, username);
+
+        //Cargamos la sala a partir de los datos.
+        Room r = loaderJson.fromJson(Room.class, jsonData);
+        r.esOnline = true;
+
+        //Añadimos la nueva sala a las salas cargadas.
+        loadedRooms.put(r.roomName, r);
+
+        Gdx.app.log("RoomLoader", "Se ha cargado la Room " + r.roomName + " correctamente.");
+    }
+
+
+    /**
+     * Devuelve los datos de la sala en formato JSON.
+     * @param roomName Nombre de la sala a obtener.
+     * @return Datos de la sala indicada en formato JSON.
+     */
+    public String GetRoomJSON(String roomName)
+    {
+        Room rSave = loadedRooms.get(roomName);
+        if(rSave == null)
+        {
+            Gdx.app.error("RoomLoader", "No es posible guardar la Room: " + roomName +
+                    "; ¿Está cargada?");
+            return "";
+        }
+
+        String data = loaderJson.toJson(rSave);
+        return data;
+    }
+
+
     /**
      * Descarga una Room dado su ID.
      * @param roomID ID de la Room a descargar.
@@ -115,6 +149,20 @@ public class RoomLoader
         //¿Habría que matar al objeto manualmente?
         //¿Quizás debamos hacerlo un recurso de LibGDX para poder matarlo?
         // En ningún momento estamos comprobando que se haya eliminado correctamente.
+    }
+
+    /**
+     * Descarga todas las salas que tenga.
+     */
+    public void UnloadAllRooms()
+    {
+        //Iteramos por todas las salas, descargándolas.
+        for(Room r : loadedRooms.values())
+        {
+            UnloadRoom(r.roomName);
+        }
+        //También podríamos ejecutar directamente un
+        //loadedRooms.clear();
     }
 
 
@@ -178,7 +226,6 @@ public class RoomLoader
     Room currentRoom;
     HashMap<String, Room> loadedRooms;
 
-    //ToDo: Revisar si lo dejamos así o lo sacamos directamente desde Game.
     MachineLoader mcLoader;
 
     Json loaderJson;
@@ -320,18 +367,23 @@ public class RoomLoader
                     //Añadimos su ptr en la posición.
                     room.machineData[y][x] = mc;
 
-                    //Añadimos los recursos a la sala.
+                    //Añadimos los recursos a la sala. No se rompe nada pues no se comprueba que sean válidos.
                     room.ModificarRecursosPorMaquina(mc, true);
 
-                    //room.machineData_Test[y][x] = yData.get(x).asString();
+                    //Indicamos que se ha ocupado un hueco.
+                    room.espacioOcupado += 1;
+
+                    //Añadimos el dinero que generará esa máquina y la puntuación que da.
+                    room.dineroPorCiclo += mc.dineroProducido;
+                    //TODO: Añadir puntuación que da.
                 }
             }
-            //  ToDo: Los atributos de la sala se generan al cargar la sala contando las máquinas que haya.
-            //      habría que llamar al método que lo haga. O hacerlo al añadir las máquinas.........
 
-            //Iteramos por todas las máquinas de la sala, añadiendo sus recursos manualmente.
+            //TODO: Añadir un método que compruebe que los recursos consumidos no son mayores que los máximos.
+            //  En caso de serlo, habrá sido una modificación manual y sería genial que le saltara un mensaje al
+            //  jugador diciendo que le hemos pillado.
 
-
+            // Utilizar el método: room.comprobarRoomHackeada(). No lo tengo puesto porque no está probado.
 
             return room;
         }

@@ -41,11 +41,47 @@ public class GameManager
         return instance;
     }
 
+    /**
+     * Permite comprobar si ya existe el usuario y se puede iniciar sesión
+     * o hay que crear uno nuevo.
+     * @return True si existe, false si no.
+     */
+    public boolean ComprobarExisteUsuario()
+    {
+        return LoginSystem.ComprobarExisteUsuario();
+    }
+
+    /**
+     * Utilizado para autentificar un usuario.
+     */
+    public void AutentificarUsuario()
+    {
+        //Comprobamos que tenemos los datos de usuario.
+        if(!ComprobarExisteUsuario())
+        {
+            Gdx.app.error("GameManager", "No se ha podido autentificar el usuario. " +
+                    "Los datos de usuario no existen.");
+            return;
+        }
+        LoginSystem.AutentificarUsuario();
+    }
+
+
+    /**
+     * Permite comprobar si existe la partida y se puede cargar
+     * o hay que comenzar una nueva.
+     * @return True si existe, false si no.
+     */
+    public boolean ComprobarExistePartida()
+    {
+        return SaveLoader.ComprobarExistePartida(Gdx.files.local(localSavePath + "save.json"));
+    }
+
 
     /**
      * Realiza el guardado del save y de las salas.
      */
-    public void SaveGame()
+    public void SaveGameToJSON()
     {
         SaveLoader.SaveToJSON(saveData, Gdx.files.local(localSavePath + "save.json"));
         rmLoader.SaveAllRoomsToJSON();
@@ -56,8 +92,16 @@ public class GameManager
      * No activa ninguna de ellas.
      * Todo: Probablemente queramos también autentificar al usuario.
      */
-    public void LoadGame()
+    public void LoadGameFromJSON()
     {
+        //Comprobamos que existe la partida.
+        if(!ComprobarExistePartida())
+        {
+            Gdx.app.error("GameManager", "No se puede cargar la partida. " +
+                    "El archivo de datos no existe.");
+            return;
+        }
+
         SaveLoader.LoadFromJSON(Gdx.files.local(localSavePath + "save.json"));
 
         //Cargamos desde sus archivos todas las salas que el jugador tenga compradas.
@@ -72,6 +116,34 @@ public class GameManager
     }
 
     /**
+     * Utilizado para cargar partidas de otros usuarios desde la BD.
+     * Se ha de indicar el usuario de la partida que se quiere cargar.
+     */
+    public void LoadGameFromDB(String username)
+    {
+        //Descargamos todas las salas que tengamos cargadas.
+        RoomLoader.getInstance().UnloadAllRooms();
+
+        //Limpiamos los datos de Save.
+        saveData = null;
+
+        //Cargamos el nuevo Save desde la BD.
+        saveData = dbConnector.GetSaveDataFromDB(username);
+
+        //Cargamos todas las salas que tenga este save.
+        for(Map.Entry<String, Boolean> salas : saveData.ownedRooms.entrySet())
+        {
+            //Comprobamos si tiene la sala.
+            if(salas.getValue())
+            {
+                //Obtenemos los datos de esa sala.
+
+            }
+        }
+    }
+
+
+    /**
      * Reinicia la sala indicada.
      * Para ello, copia el archivo por defecto a la carpeta de guardado del jugador.
      * Fixme: Quizás en vez de copiar el archivo queramos cargarlo y luego guardarlo...
@@ -84,15 +156,28 @@ public class GameManager
         prefab.copyTo(roomSave);
     }
 
+    /**
+     * Realiza la compra de una nueva sala. Para ello:
+     *  - Carga la sala por defecto desde el prefab.
+     *  - Se comprueba que se tiene dinero.
+     *  - Guarda la sala en la ubicación de salas del jugador.
+     *  - Resta el dinero que cuesta esta sala.
+     *  - Actualiza el Save para indicar que se tiene esa sala.
+     * @param roomID
+     * @return
+     */
     public boolean ComprarRoom(String roomID)
     {
         //Cargamos la sala por defecto desde el prefab de la misma.
         rmLoader.LoadRoomFromJSON(Gdx.files.internal(internalRoomDataPath + roomID + ".json"));
         Room rm = rmLoader.GetRoomByID(roomID);
 
+        //Es necesario cargar la sala primero para saber su precio.
         if(saveData.dinero < rm.roomPrice)
         {
             Gdx.app.log("GameManager", "No tienes dinero para comprar la sala");
+            //Si no se ha comprado, deberíamos descargar la sala.
+            rmLoader.UnloadRoom(roomID);
             return false;
         }
 
@@ -101,10 +186,19 @@ public class GameManager
         //Cobramos por ella.
         saveData.dinero -= rm.roomPrice;
 
-        //Fixme: Debería devolver true/false en función de cómo haya ido.
+        //Actualizamos el Save para indicar que se tiene esa sala.
+        saveData.ownedRooms.put(roomID, true);
+
         return true;
     }
 
+    /**
+     * Realiza las operaciones necesarias para comprar una máquina para la sala activa.
+     * @param mc Prt a la máquina que queremos añadir.
+     * @param posX Posición x para la nueva máquina.
+     * @param posY Posición y para la nueva máquina.
+     * @return True si la compra se ha completado, false si no.
+     */
     public boolean ComprarMachine(Machine mc, int posX, int posY)
     {
         //Comprobamos si tenemos dinero suficiente.
@@ -127,6 +221,31 @@ public class GameManager
     }
 
 
+    /**
+     * Completa un ciclo del juego y el jugador obtiene el dinero de sus máquinas.
+     */
+    public void CompletarCiclo()
+    {
+        //Calculamos el dinero obtenido.
+        int dineroObtenido = 0;
+
+        //Obtenemos un Ptr al RoomLoader.
+        RoomLoader rl = RoomLoader.getInstance();
+
+        //Iteramos por las salas que posee según el save.
+        for(Map.Entry<String, Boolean> salas : saveData.ownedRooms.entrySet())
+        {
+            //Comprobamos si posee esa sala.
+            if(salas.getValue())
+            {
+                int dineroSala = rl.GetRoomByID(salas.getKey()).dineroPorCiclo;
+                dineroObtenido += dineroSala;
+            }
+        }
+
+        //Se itera por las salas y se suma su dinero por ciclo al dinero total.
+        saveData.dinero += dineroObtenido;
+    }
 
 
 

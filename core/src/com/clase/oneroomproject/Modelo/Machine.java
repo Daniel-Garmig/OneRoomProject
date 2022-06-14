@@ -5,15 +5,6 @@ import com.badlogic.gdx.utils.Null;
 
 import java.util.HashMap;
 
-/*
-ToDo:
- - Sistema de Atributos.
- - Revisar constructores y sus parámetros.
- - Revisar Getters/Setters y privacidad de variables.
- - ¿Mover variables arriba?
- - ¿?
- */
-
 
 /**
  * Almacena los datos relativos a una máquina.

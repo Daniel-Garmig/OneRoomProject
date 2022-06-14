@@ -7,10 +7,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-    /*ToDo:
-       - Revisar métodos para mover y eliminar máquinas.
-       - Crear el método para calcular la sala.
-    */
 
 /**
  * Clase que contiene los datos de la Sala y permite interactuar con ellos.
@@ -102,7 +98,7 @@ public class Room
 
         //Añadimos el dinero que produce.
         //Todo: Esto debería ser únicamente en máquinas de dinero o
-        // en todas las máquinas. Podemos considerar que si no producen dinero tendrán valor 0.
+        // en todas las máquinas. Podemos considerar que si no producen dinero tendrán valor 0 en dineroProducido.
         dineroPorCiclo += machineToAdd.dineroProducido;
 
         //Se consume un hueco de espacio en la sala.
@@ -309,6 +305,8 @@ public class Room
     /**
      * Elimina la máquina en la posición indicada.
      * Devuelve los recursos que esta máquina consumía/generaba.
+     *
+     * FIXME: Si la máquina es de recursos, hay que comprobar que se puede eliminar.
      * @param posX Posición x de la máquina a eliminar.
      * @param posY Posición y de la máquina a eliminar.
      */
@@ -324,6 +322,41 @@ public class Room
 
         //Quitamos el dinero que produce.
         dineroPorCiclo -= mc.dineroProducido;
+    }
+
+
+    /**
+     * Comprueba si el archivo de guardado de la Room ha sido modificado de forma externa.
+     * Es decir, que no hay más recursos consumidos que disponibles.
+     * Que no hay más huecos utilizados de los disponibles, ...
+     * @return True si se ha modificado, false si parece correcto (se ha modificado pero bien).
+     */
+    public boolean ComprobarRoomHackeada()
+    {
+        if(espacioOcupado > espacioTotal)
+        {
+            Gdx.app.log("Room", "Esta sala tiene más huecos ocupados de los que debe...");
+            return true;
+        }
+
+        //Iteramos por los recursos.
+        for(Map.Entry<String, Integer> recurso : recursosOcupados.entrySet())
+        {
+            //Obtenemos el valor.
+            int valor = recurso.getValue();
+            //Obtenemos el valor máximo que se puede tener.
+            int valorMaximo = recursosMaximos.get(recurso.getKey());
+
+            if(valor > valorMaximo)
+            {
+                Gdx.app.log("Room", "Esta sala está gastando más recursos de los que tiene...");
+                return true;
+            }
+
+        }
+
+        //Si parece en orden...
+        return false;
     }
 
 

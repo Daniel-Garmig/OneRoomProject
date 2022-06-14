@@ -17,13 +17,30 @@ public class SaveLoader
     private SaveLoader() {}
 
     /**
+     * Permite comprobar si existe el archivo de datos de partida.
+     * @return True si existe el archivo, False si no.
+     */
+    public static boolean ComprobarExistePartida(FileHandle file)
+    {
+        //Comprobamos si existe el file.
+        if(file.exists())
+        {
+            return true;
+        }
+        return false;
+    }
+
+
+    /**
      * Permite cargar los datos de una partida desde un archivo JSON.
      * @param file FileHandle (internal) del JSON de datos.
      * @return El objeto Save que se ha creado.
      */
     public static Save LoadFromJSON(FileHandle file)
     {
-        //FileHandle file = Gdx.files.internal(path);
+        //Comprobamos si existe antes de intentar cargarlo.
+        ComprobarExistePartida(file);
+
         Json json = new Json();
         Gdx.app.debug("SaveLoader", "Se están cargado los datos de guardado desde: " + file);
         return json.fromJson(Save.class, file);

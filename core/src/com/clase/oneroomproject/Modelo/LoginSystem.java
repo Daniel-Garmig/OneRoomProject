@@ -22,6 +22,7 @@ public class LoginSystem
      */
     public static boolean AutentificarUsuario()
     {
+
         //Se llamará al procedimiento de la DB.
         //Se le pasarán los datos de datosUsuario.
         //  si datosUsuario = null -> LoadFromJSON();
@@ -40,14 +41,28 @@ public class LoginSystem
     }
 
     /**
+     * Comprueba si existen los datos de inicio de sesión del usuario.
+     * @return True si existe el fichero de datos, false si no.
+     */
+    public static boolean ComprobarExisteUsuario()
+    {
+        FileHandle file = Gdx.files.local(localDefaultSavePath + defaultFileName);
+        if(!file.exists())
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Comprueba en la BD si ese nick ya está ocupado.
      * @param username Nombre de usuario a comprobar.
      * @return True si el nick está disponible, False si está ocupado.
      */
     public static boolean ComprobarNickDisponible(String username)
     {
-        //TODO: dbConector.comprobarNick.
-        return true;
+        return dbConnector.ComprobarNickDisponible(username);
     }
 
     /**
@@ -69,7 +84,6 @@ public class LoginSystem
         }
 
         //Creamos el usuario.
-        //FIXME: No es demasiado bonito...
         datosUsuario = new LoginData();
         datosUsuario.nickname = username;
         datosUsuario.password = password;
@@ -78,7 +92,7 @@ public class LoginSystem
         SaveToJSON();
 
         //Lo añadimos a la DB.
-        AddUserToDB();
+        dbConnector.AddNewUser(datosUsuario);
 
     }
 
@@ -88,8 +102,7 @@ public class LoginSystem
     private static void LoadFromJSON()
     {
         //Comprobamos si el archivo existe.
-        FileHandle file = Gdx.files.local(localDefaultSavePath + defaultFileName);
-        if(!file.exists())
+        if(!ComprobarExisteUsuario())
         {
             Gdx.app.error("LoginSystem", "No se puede cargar el archivo de datos de usuario. " +
                     "El Archivo no existe");
@@ -97,6 +110,8 @@ public class LoginSystem
         }
 
         //Cargamos desde archivo.
+        FileHandle file = Gdx.files.local(localDefaultSavePath + defaultFileName);
+
         Json json = new Json();
         datosUsuario = json.fromJson(LoginData.class, file);
     }
@@ -115,16 +130,6 @@ public class LoginSystem
         file.writeString(json.prettyPrint(datos), false);
     }
 
-    /**
-     * Añade un usuario a la BD a partir de los datos de usuario.
-     *
-     * @see dbConnector
-     */
-    private static void AddUserToDB()
-    {
-        //Inserta directamente a la DB.
-        //TODO: dbConector.adduser;
-    }
 
 
     private static boolean logged = false;

@@ -11,6 +11,7 @@ public class Save
 {
 
     int dinero;
+
     /*
         Indica si el jugador tiene comprada esa sala y, por tanto, ha de aparecer/cargarse.
      */
