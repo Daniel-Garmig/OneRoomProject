@@ -22,10 +22,23 @@ public class LoginSystem
      */
     public static boolean AutentificarUsuario()
     {
+        //Comprobamos que tenemos datos de usuario.
+        if(datosUsuario == null)
+        {
+            Gdx.app.error("LoginSystem", "No se puede autentificar al usuario. " +
+                    "Los datos de usuario no están cargados.");
+            return false;
+        }
 
-        //Se llamará al procedimiento de la DB.
-        //Se le pasarán los datos de datosUsuario.
-        //  si datosUsuario = null -> LoadFromJSON();
+        //Realizamos la autentificación en la DB.
+        if(!dbConnector.AutentificarUsuario(datosUsuario))
+        {
+            Gdx.app.error("LoginSystem", "ERROR DE AUTH! Los datos de usuario son incorrectos.");
+            return false;
+        }
+
+        //Si ha salido bien, estará autentificado.
+        logged = true;
         return true;
     }
 

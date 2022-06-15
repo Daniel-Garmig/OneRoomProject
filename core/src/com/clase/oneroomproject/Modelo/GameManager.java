@@ -2,6 +2,7 @@ package com.clase.oneroomproject.Modelo;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 
 import java.util.Map;
 
@@ -19,6 +20,10 @@ public class GameManager
     private final String localRoomSavePath = "saves/Rooms/";
     private final String internalDataPath = "data/";
     private final String internalRoomDataPath = "data/";
+
+
+    private final int dineroInicial = 1000;
+    private final String roomInicial = "Sotano";
 
     public MachineLoader mcLoader;
     public RoomLoader rmLoader;
@@ -42,14 +47,25 @@ public class GameManager
     }
 
     /**
-     * Permite comprobar si ya existe el usuario y se puede iniciar sesión
-     * o hay que crear uno nuevo.
+     * Permite comprobar si existe el archivo de datos de usuario y se puede iniciar sesión.
      * @return True si existe, false si no.
      */
     public boolean ComprobarExisteUsuario()
     {
         return LoginSystem.ComprobarExisteUsuario();
     }
+
+    /**
+     * Permite crear un nuevo usuario a partir de los datos introducidos.
+     * Se creará el archivo de datos de usuario y se añadirá a la DB.
+     * @param username Nombre de usuario.
+     * @param pass Contraseña.
+     */
+    public void CrearNuevoUsuario(String username, String pass)
+    {
+        LoginSystem.CrearNuevoUsuario(username, pass);
+    }
+
 
     /**
      * Utilizado para autentificar un usuario.
@@ -77,6 +93,33 @@ public class GameManager
         return SaveLoader.ComprobarExistePartida(Gdx.files.local(localSavePath + "save.json"));
     }
 
+    /**
+     * Realiza todas las acciones necesarias para crear una partida nueva.
+     * Crea unos nuevos datos de partida.
+     * Reinicia la sala de inicio.
+     * Crea
+     */
+    public void CrearNuevaPartida()
+    {
+        //Nos aseguramos que los datos de partida están límpios.
+        saveData = null;
+
+        saveData = new Save();
+        saveData.dinero = dineroInicial;
+
+        //Indicamos que tiene la sala inicial.
+        saveData.ownedRooms.put(roomInicial, true);
+        //Reiniciamos la sala inicial.
+        ReiniciarRoom(roomInicial);
+        //Cargamos la sala inicial.
+        rmLoader.LoadRoomFromJSON(Gdx.files.local(localSavePath + roomInicial + ".json"));
+
+        //Creamos la nueva partida en la DB.
+        dbConnector.AddNewSaveDataToDB(saveData);
+        //Creamos la nueva sala de inicio en la DB.
+        dbConnector.AddNewRoomToDB(roomInicial);
+    }
+
 
     /**
      * Realiza el guardado del save y de las salas.
@@ -90,7 +133,6 @@ public class GameManager
     /**
      * Carga todas las salas que el jugador tenga compradas.
      * No activa ninguna de ellas.
-     * Todo: Probablemente queramos también autentificar al usuario.
      */
     public void LoadGameFromJSON()
     {
@@ -102,7 +144,7 @@ public class GameManager
             return;
         }
 
-        SaveLoader.LoadFromJSON(Gdx.files.local(localSavePath + "save.json"));
+        saveData = SaveLoader.LoadFromJSON(Gdx.files.local(localSavePath + "save.json"));
 
         //Cargamos desde sus archivos todas las salas que el jugador tenga compradas.
         for(Map.Entry<String, Boolean> rooms : saveData.ownedRooms.entrySet())
@@ -116,8 +158,32 @@ public class GameManager
     }
 
     /**
+     * Guarda la partida del usuario en la DB.
+     * También guardará/actualizará las salas que tenga compradas.
+     * Actualiza también la puntuación total de la partida.
+     */
+    public void SaveGameToDB()
+    {
+        //Obtenemos la puntuación total.
+        int puntuacionTotal = GetPuntuacionTotal();
+
+        //Actualizamos los datos de la partida en la DB.
+        dbConnector.SaveSaveDataToDB(saveData, puntuacionTotal);
+
+        //Actualizamos los datos de las salas que tiene compradas.
+        for(Map.Entry<String, Boolean> tieneSala : saveData.ownedRooms.entrySet())
+        {
+            if(tieneSala.getValue())
+            {
+                dbConnector.SaveRoomToDB(tieneSala.getKey());
+            }
+        }
+    }
+
+    /**
      * Utilizado para cargar partidas de otros usuarios desde la BD.
      * Se ha de indicar el usuario de la partida que se quiere cargar.
+     * @param username Nombre del usuario cuya partida se quiere cargar.
      */
     public void LoadGameFromDB(String username)
     {
@@ -136,8 +202,8 @@ public class GameManager
             //Comprobamos si tiene la sala.
             if(salas.getValue())
             {
-                //Obtenemos los datos de esa sala.
-
+                //Cargamos las salas desde DB.
+                rmLoader.LoadRoomFromDB(salas.getKey(), username);
             }
         }
     }
@@ -146,7 +212,7 @@ public class GameManager
     /**
      * Reinicia la sala indicada.
      * Para ello, copia el archivo por defecto a la carpeta de guardado del jugador.
-     * Fixme: Quizás en vez de copiar el archivo queramos cargarlo y luego guardarlo...
+     * Quizás en vez de copiar el archivo queramos cargarlo y luego guardarlo...
      * @param roomID ID de la room a reiniciar.
      */
     public void ReiniciarRoom(String roomID)
@@ -163,8 +229,8 @@ public class GameManager
      *  - Guarda la sala en la ubicación de salas del jugador.
      *  - Resta el dinero que cuesta esta sala.
      *  - Actualiza el Save para indicar que se tiene esa sala.
-     * @param roomID
-     * @return
+     * @param roomID Nombre de la sala a comprar.
+     * @return True si se ha completado la compra. False si ha ocurrido un error.
      */
     public boolean ComprarRoom(String roomID)
     {
@@ -188,6 +254,9 @@ public class GameManager
 
         //Actualizamos el Save para indicar que se tiene esa sala.
         saveData.ownedRooms.put(roomID, true);
+
+        //Añadimos la sala comprada a la BD (La versión por defecto que tenemos cargada).
+        dbConnector.AddNewRoomToDB(roomID);
 
         return true;
     }
@@ -247,6 +316,25 @@ public class GameManager
         saveData.dinero += dineroObtenido;
     }
 
+    /**
+     * Devuelve la puntuación total de la partida cargada.
+     * @return Puntuación de la partida.
+     */
+    public int GetPuntuacionTotal()
+    {
+        int total = 0;
 
+        //Obtenemos la puntuación de cada una de las salas.
+        for(Map.Entry<String, Boolean> tieneSala : saveData.ownedRooms.entrySet())
+        {
+            if(tieneSala.getValue())
+            {
+                Room r = rmLoader.GetRoomByID(tieneSala.getKey());
+                total += r.roomScore;
+            }
+        }
+
+        return total;
+    }
 
 }

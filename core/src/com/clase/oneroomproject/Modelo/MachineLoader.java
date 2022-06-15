@@ -10,11 +10,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
-/*
-    ToDo:
-     - Comprobar que los archivos (los paths) existen.
- */
-
 
 /**
  * Carga los datos de las máquinas desde el JSON de datos y almacena los "prefabs" de las mismas.

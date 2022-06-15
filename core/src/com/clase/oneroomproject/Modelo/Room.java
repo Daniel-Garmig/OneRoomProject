@@ -103,6 +103,8 @@ public class Room
 
         //Se consume un hueco de espacio en la sala.
         espacioOcupado += 1;
+        roomScore += machineToAdd.machineCost;
+
 
         return true;
     }
@@ -322,6 +324,7 @@ public class Room
 
         //Quitamos el dinero que produce.
         dineroPorCiclo -= mc.dineroProducido;
+        roomScore -= mc.machineCost;
     }
 
 

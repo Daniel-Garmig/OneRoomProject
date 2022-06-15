@@ -70,6 +70,5 @@ public class CargandoScreen implements Screen {
 
     @Override
     public void dispose() {
-        carganadoFondo.dispose();
     }
 }

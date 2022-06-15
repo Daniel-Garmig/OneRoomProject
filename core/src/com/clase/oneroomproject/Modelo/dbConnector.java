@@ -137,6 +137,18 @@ public class dbConnector
     }
 
     /**
+     * Autentifica al usuario.
+     * Comprobará en la BD si los datos (usuario y contraseña) son correctos.
+     * @param datosUsuario Datos del usuario a autentificar.
+     * @return True si los datos son correctos, false si no.
+     */
+    public static boolean AutentificarUsuario(LoginData datosUsuario)
+    {
+        //TODO: Realiza la autentificación del usuario usando el procedimiento de la BD.
+        return true;
+    }
+
+    /**
      * Devuelve el ID de partida del jugador. Utiliza el usuario con el que está autentificado.
      * Sólo se realiza la consulta una vez, luego el valor se guarda.
      * @return ID de partida del jugador.
@@ -190,17 +202,64 @@ public class dbConnector
 
 
     /**
-     * Sube a la DB el Save y los datos del usuario.
-     * Esto incluye las salas asociadas al mismo.
+     * Añade una nueva sala a la partida del jugador en la DB.
+     * Es utilizado al comprar una nueva sala.
+     * @param roomName Nombre de la sala a añadir.
      */
-    public static void UploadSave()
+    public static void AddNewRoomToDB(String roomName)
+    {
+        //Obtenemos los datos necesarios.
+        int idPartida = GetIDPartidaFromDB();
+        Room r = RoomLoader.getInstance().GetRoomByID(roomName);
+
+        //Comprobamos que se ha obtenido la sala.
+        if(r == null)
+        {
+            Gdx.app.error("dbConnector", "No se puede añadir la sala " + roomName +
+                    ". Puede ser que no esté cargada en el RoomLoader.");
+            return;
+        }
+
+        //Creamos el Statement.
+        Statement stt = CrearStatement();
+
+        //Añadimos la nueva sala a la DB.
+        try
+        {
+            //FIXME: Arreglar Querry.
+            stt.execute("insert into ....");
+        } catch (SQLException e)
+        {
+            Gdx.app.error("dbConnector", "No se ha podido añadir la nueva sala " + roomName);
+        }
+
+        //Al terminar, cerramos el Statement.
+        CerrarStatement(stt);
+    }
+
+    /**
+     * Guarda la nueva partida en la DB.
+     * Es utilizado al crear una partida nueva.
+     * @param datosPartida Datos de la partida a guardar.
+     */
+    public static void AddNewSaveDataToDB(Save datosPartida)
+    {
+        //TODO: Guardar los datos de la partida.
+        //  Se insertan los datos (el ID de partida es auto_increment).
+    }
+
+
+    /**
+     * Sube a la DB el Save de la partida y la puntuación total.
+     */
+    public static void SaveSaveDataToDB(Save datosPartida, int puntuacionTotal)
     {
         //TODO: Guardar los datos.
         //  También habrá que guardar la puntuación total.
 
     }
 
-
+    
     /**
      * Sube la sala indicada a la BD.
      * @param roomName Nombre de la sala a guardar.
