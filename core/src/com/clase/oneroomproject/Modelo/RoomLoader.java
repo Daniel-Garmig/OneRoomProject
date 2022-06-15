@@ -10,11 +10,6 @@ import com.badlogic.gdx.utils.JsonWriter;
 import java.util.HashMap;
 import java.util.Map;
 
-/*
-    ToDo:
-     - Comprobar que los archivos (los paths) existen.
- */
-
 
 /**
  * Clase encargada de gestionar las diferentes salas:
@@ -376,6 +371,7 @@ public class RoomLoader
                     //Añadimos el dinero que generará esa máquina y la puntuación que da.
                     room.dineroPorCiclo += mc.dineroProducido;
                     //TODO: Añadir puntuación que da.
+                    room.roomScore += mc.machineCost;
                 }
             }
 
