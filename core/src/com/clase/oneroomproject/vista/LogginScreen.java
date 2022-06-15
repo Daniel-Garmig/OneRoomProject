@@ -73,7 +73,7 @@ public class LogginScreen implements Screen, StageInterface{
 
     @Override
     public void initComponentes() {
-        skin = new Skin(Gdx.files.internal("pruebaSkin\\uiskin.json"));
+        skin = new Skin(Gdx.files.internal("pruebaSkin/uiskin.json"));
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
         txtFieldNick = new TextField("Escribe tu nick", skin);

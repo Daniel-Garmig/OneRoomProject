@@ -86,8 +86,8 @@ public class MainGame extends Game {
 			loggin = new LogginScreen(this);
 			salaG = new SalaScreen(this);
 			tsm = new TileSetManager();
-			tsm.loadTileSet("PruebasAssets\\tiles.png", "tileSetSotanoBg", 128, 128);
-			tsm.loadTileSet("PruebasAssets\\PruebaMap.png", "tileSetSotanoMc", 8,8);
+			tsm.loadTileSet("PruebasAssets/tiles.png", "tileSetSotanoBg", 128, 128);
+			tsm.loadTileSet("PruebasAssets/PruebaMap.png", "tileSetSotanoMc", 8,8);
 			gm.mcLoader.LoadFromJSON(Gdx.files.internal("data/testMachines.json"));
 			setScreen(menu);
 		}catch (Exception e){

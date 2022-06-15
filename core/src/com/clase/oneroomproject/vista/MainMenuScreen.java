@@ -109,7 +109,7 @@ public class MainMenuScreen implements Screen, StageInterface {
 
     @Override
     public void initComponentes() {
-        skin = new Skin(Gdx.files.internal("pruebaSkin\\uiskin.json"));
+        skin = new Skin(Gdx.files.internal("pruebaSkin/uiskin.json"));
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
         btnJugar = new TextButton("Pulsa para jugar", skin);

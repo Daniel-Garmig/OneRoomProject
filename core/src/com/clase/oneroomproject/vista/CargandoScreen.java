@@ -34,7 +34,7 @@ public class CargandoScreen implements Screen {
     @Override
     public void show() {
         batchG = game.getBatch();
-        carganadoFondo= new Texture("PruebasAssets\\cargandoFondo.jpg");
+        carganadoFondo= new Texture("PruebasAssets/cargandoFondo.jpg");
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 0, 0);
     }

@@ -84,7 +84,7 @@ public class MapaScreen implements Screen, StageInterface {
     public void initComponentes() {
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
-        skin = new Skin(Gdx.files.internal("pruebaSkin\\uiskin.json"));
+        skin = new Skin(Gdx.files.internal("pruebaSkin/uiskin.json"));
         btnSala1 = new Button(skin);
         btnSala2 = new Button(skin);
     }
