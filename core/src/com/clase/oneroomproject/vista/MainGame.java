@@ -2,12 +2,17 @@ package com.clase.oneroomproject.vista;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.tiled.TiledMapTileSet;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.clase.oneroomproject.Modelo.GameManager;
+import com.clase.oneroomproject.Modelo.TileSetManager;
+
+import java.util.concurrent.TimeoutException;
 
 public class MainGame extends Game {
 	/**
@@ -38,6 +43,14 @@ public class MainGame extends Game {
 	 * Clase api (GameManager)
 	 */
 	GameManager gm = GameManager.getInstance();
+	/**
+	 * Sala genérica que carga los datos del json
+	 */
+	SalaScreen salaG;
+	/**
+	 * TileSetManager
+	 */
+	TileSetManager tsm;
 	AssetManager assetManager;
 	
 	@Override
@@ -71,12 +84,14 @@ public class MainGame extends Game {
 			online = new OnlineScreen(this);
 			mapa = new MapaScreen(this);
 			loggin = new LogginScreen(this);
-			System.out.println("Antes de cargando");
+			salaG = new SalaScreen(this);
+			tsm = new TileSetManager();
+			tsm.loadTileSet("PruebasAssets\\tiles.png", "tileSetSotanoBg", 128, 128);
+			tsm.loadTileSet("PruebasAssets\\PruebaMap.png", "tileSetSotanoMc", 8,8);
+			gm.mcLoader.LoadFromJSON(Gdx.files.internal("data/testMachines.json"));
 			setScreen(menu);
 		}catch (Exception e){
 			e.printStackTrace();
 		}
-
-
 	}
 }

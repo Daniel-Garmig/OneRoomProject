@@ -1,6 +1,6 @@
-[datosString
+[
 {
-	"class": "uberelectron.gameSystems.Machine",
+	"class": "com.clase.oneroomproject.Modelo.Machine",
 	"machineID": "base_raspi_mk1",
 	"attributes": {
 		"Electricidad": 2,
@@ -13,7 +13,7 @@
 	"tilePos": 3
 },
 {
-	"class": "uberelectron.gameSystems.Machine",
+	"class": "com.clase.oneroomproject.Modelo.Machine",
 	"machineID": "test_mach2",
 	"machineCost": 10,
 	"dineroProducido": 15,

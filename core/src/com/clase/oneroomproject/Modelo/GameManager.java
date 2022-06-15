@@ -16,8 +16,8 @@ public class GameManager
 {
     private static GameManager instance;
 
-    private final String localSavePath = "saves/";
-    private final String localRoomSavePath = "saves/Rooms/";
+    private final String localSavePath = "gameData/";
+    private final String localRoomSavePath = "gameData/Rooms/";
     private final String internalDataPath = "data/";
     private final String internalRoomDataPath = "data/";
 

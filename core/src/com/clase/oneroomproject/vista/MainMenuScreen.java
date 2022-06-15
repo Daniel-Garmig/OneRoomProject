@@ -136,7 +136,7 @@ public class MainMenuScreen implements Screen, StageInterface {
                 //Si el .json no existe entonces cargará por primera vez el juego y creará el json
                 //Por el momento siempre pondrá el mapa
                 //Todo Utilizar método del GameManager.loadJson
-                if (game.gm.ComprobarExistePartida()){
+                if (!game.gm.ComprobarExistePartida()){
                     game.setScreen(game.loggin);
                 }else{
                     game.gm.LoadGameFromJSON();

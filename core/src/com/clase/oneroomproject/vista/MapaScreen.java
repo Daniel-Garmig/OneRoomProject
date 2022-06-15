@@ -110,13 +110,17 @@ public class MapaScreen implements Screen, StageInterface {
         btnSala1.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                /*
                 if (game.gm.saveData.ownedRooms.get("sotano")){
                     game.gm.rmLoader.SetCurrentRoom("sotano");
                     //TODO Cargar sala genérica
+
                 }else{
                     ;
                 }
-
+                */
+                game.gm.rmLoader.SetCurrentRoom("testRoom");
+                game.setScreen(game.salaG);
             }
         });
     }
