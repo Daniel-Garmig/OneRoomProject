@@ -1,0 +1,8 @@
+{
+    "dinero": 1000,
+    "ownedRooms": {
+        "invernadero": false,
+        "sotano": true,
+        "recreativos": false
+    }
+}
