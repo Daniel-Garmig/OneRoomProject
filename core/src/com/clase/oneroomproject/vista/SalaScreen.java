@@ -5,7 +5,6 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapLayers;
@@ -19,7 +18,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.clase.oneroomproject.Modelo.Machine;
@@ -29,6 +27,7 @@ import com.clase.oneroomproject.Modelo.RoomLoader;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 public class SalaScreen implements Screen, StageInterface {
@@ -67,6 +66,7 @@ public class SalaScreen implements Screen, StageInterface {
         ArrayList<String> mcSotano = new ArrayList<>();
         mcSotano.add("base_raspi_mk1");
         mcSotano.add("test_mach2");
+        mcSotano.add("base_raspi_mk1");
 
         mcTiendaEnSala.put("testRoom", mcSotano);
     }
@@ -171,7 +171,8 @@ public class SalaScreen implements Screen, StageInterface {
     {
         btnStats.addListener(new ChangeListener() {
             @Override
-            public void changed(ChangeEvent event, Actor actor) {
+            public void changed(ChangeEvent event, Actor actor)
+            {
                 btnStats.setDisabled(true);
 
                 windowStats.addActor(btnCerrarStats);
@@ -236,7 +237,7 @@ public class SalaScreen implements Screen, StageInterface {
 
                 TextButton bttCerrar = new TextButton("Cerrar", skin);
                 bttCerrar.align(Align.top);
-                windowTienda.add(bttCerrar).colspan(2);
+                Cell<TextButton> btnCerrarCell = windowTienda.add(bttCerrar);
 
                 windowTienda.setDebug(true, true);
 
@@ -244,6 +245,9 @@ public class SalaScreen implements Screen, StageInterface {
 
                 windowTienda.getTitleLabel().setAlignment(Align.center);
                 AddMcToTienda();
+
+                //Indicamos el colspan para el botón de cerrar (para centrarlo).
+                btnCerrarCell.colspan(windowTienda.getColumns());
 
                 /**
                  * Evento para cerrar la Window
@@ -262,7 +266,10 @@ public class SalaScreen implements Screen, StageInterface {
             }
         });
 
-        stage.addListener(new ClickListener(){
+        //Utilizado cuando haces click en modo espectral.
+        stage.addListener(new ClickListener()
+        {
+
         });
     }
 
@@ -290,8 +297,8 @@ public class SalaScreen implements Screen, StageInterface {
             TiledMapTileSet tileSet = game.tsm.GetTileSet("tileSetSotanoMc");
 
             //Obtenemos la textureRegion específica.
-            TextureRegion tx = tileSet.getTile(mc.getTilePos()).getTextureRegion();
-            TextureRegionDrawable drw = new TextureRegionDrawable(tx);
+            final TextureRegion tx = tileSet.getTile(mc.getTilePos()).getTextureRegion();
+            final TextureRegionDrawable drw = new TextureRegionDrawable(tx);
 
             //Creamos la imagen.
             ImageButton bt = new ImageButton(drw);
@@ -301,8 +308,7 @@ public class SalaScreen implements Screen, StageInterface {
                 @Override
                 public void changed(ChangeEvent event, Actor actor)
                 {
-                    ComprarMachine(mcName);
-                    //TODO: Debería cerrar las ventanas también.
+                    ComprarMachine(mcName, tx);
                 }
             });
 
@@ -311,6 +317,7 @@ public class SalaScreen implements Screen, StageInterface {
             group.align(Align.center);
             group.addActor(bt);
             group.addActor(new Label(mcName, skin));
+            group.addActor(new Label(mc.getMachineCost() + "$", skin));
 
             group.validate();
             group.layout();
@@ -413,8 +420,53 @@ public class SalaScreen implements Screen, StageInterface {
     }
 
 
-    public void ComprarMachine(String mcName)
+    public void ComprarMachine(String mcName, TextureRegion mcTx)
     {
+        //Obtenemos la máquina sobre la que trabajamos.
+        Machine mc = MachineLoader.getInstance().GetMachine(mcName);
+
+        //Creamos una nueva ventana para mostrar la información de la máquina, permitir comprar, ...
+        Window mcBuyWindow = new Window(mcName, skin);
+        mcBuyWindow.setSize(250, 250);
+        mcBuyWindow.align(Align.center);
+
+        mcBuyWindow.add(new Label(mcName, skin)).colspan(2);
+        mcBuyWindow.row();
+
+        mcBuyWindow.add(new Label(mc.getDineroProducido() + "$ / ciclo", skin));
+        mcBuyWindow.add(new Image(mcTx));
+
+        mcBuyWindow.row();
+
+        mcBuyWindow.add(new Label("Recursos: ", skin));
+
+        mcBuyWindow.row();
+
+        String stats = "";
+
+        //Obtenemos las Stats de la máquina.
+        HashMap<String, Integer> listaRecusosMC = mc.getAttributes();
+        for(Map.Entry<String, Integer> recurso : listaRecusosMC.entrySet())
+        {
+            stats += recurso.getKey() + ": " + recurso.getValue() + "\n";
+        }
+
+        mcBuyWindow.add(new Label(stats, skin));
+
+        mcBuyWindow.row();
+
+        mcBuyWindow.add(new Label("Precio: " + mc.getMachineCost() + "$", skin)).colspan(2);
+
+        mcBuyWindow.row();
+
+        //Botones.
+        mcBuyWindow.add(new TextButton("Cerrar", skin));
+        mcBuyWindow.add(new TextButton("Comprar", skin));
+
+        mcBuyWindow.layout();
+
+        stage.addActor(mcBuyWindow);
+
         //Dada una máquina, la pondrá en modo espectral y comenzará el procedimiento de compra.
         Gdx.app.log("SalaScreen", "Se ha comprado la máquina: " + mcName);
     }

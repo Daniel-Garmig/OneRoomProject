@@ -54,6 +54,10 @@ public class Machine
     public int getTilePos() { return tilePos; }
     public void setTilePos(int tilePos) { this.tilePos = tilePos; }
 
+    public int getMachineCost() { return machineCost; }
+
+    public int getDineroProducido() { return dineroProducido; }
+
     /*-------------
      * Methods
      * -------------*/
