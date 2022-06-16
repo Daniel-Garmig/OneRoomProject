@@ -26,16 +26,17 @@ public class LoggingScreen implements Screen, StageInterface{
     private TextButton btnCancelar;
     public LoggingScreen(MainGame game) {
         this.game = game;
-    }
-
-    @Override
-    public void show() {
         camera= new OrthographicCamera();
-        camera.setToOrtho(false, 0, 0);
         initComponentes();
         addComponentes();
         putComponentes();
         gestionEventos();
+    }
+
+    @Override
+    public void show() {
+        camera.setToOrtho(false, 0, 0);
+        Gdx.input.setInputProcessor(stage);
     }
 
     @Override
@@ -65,10 +66,9 @@ public class LoggingScreen implements Screen, StageInterface{
     }
 
     @Override
-    public void initComponentes() {
-        skin = new Skin(Gdx.files.internal("pruebaSkin/uiskin.json"));
+    public void initComponentes()
+    {
         stage = new Stage();
-        Gdx.input.setInputProcessor(stage);
         txtFieldNick = new TextField("Escribe tu nick", skin);
         txtFieldPasswd = new TextField("Escribe tu contraseña", skin);
         lbNick = new Label("Nick: ", skin);

@@ -61,18 +61,20 @@ public class MainMenuScreen implements Screen, StageInterface
     {
         this.game=game;
         batchG = game.getBatch();
+        camera = new OrthographicCamera();
 
         fondo = new Texture("PruebasAssets/cargandoFondo.jpg");
-    }
 
-    @Override
-    public void show() {
-        camera = new OrthographicCamera();
-        camera.setToOrtho(false, 0, 0);
         initComponentes();
         addComponentes();
         putComponentes();
         gestionEventos();
+    }
+
+    @Override
+    public void show() {
+        camera.setToOrtho(false, 0, 0);
+        Gdx.input.setInputProcessor(stage);
     }
 
     @Override
@@ -110,9 +112,8 @@ public class MainMenuScreen implements Screen, StageInterface
     @Override
     public void initComponentes()
     {
-        skin = new Skin(Gdx.files.internal("pruebaSkin/uiskin.json"));
+        skin = game.skin;
         stage = new Stage();
-        Gdx.input.setInputProcessor(stage);
         btnJugar = new TextButton("Pulsa para jugar", skin);
         btnOnline= new TextButton("Modo Online", skin);
     }

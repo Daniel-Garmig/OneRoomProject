@@ -52,23 +52,24 @@ public class SalaScreen implements Screen, StageInterface {
     public SalaScreen(MainGame game)
     {
         this.game = game;
+        batchG = game.getBatch();
+        camera = new OrthographicCamera();
+        initComponentes();
+        addComponentes();
+        putComponentes();
+        gestionEventos();
+        namesMachine =  new ArrayList<>();
     }
 
     @Override
     public void show()
     {
+        Gdx.input.setInputProcessor(stage);
         marco = new Texture("PruebasAssets/marco.png");
-        batchG = game.getBatch();
-        camera = new OrthographicCamera();
         camera.setToOrtho(false, (float)Gdx.graphics.getWidth(), (float)Gdx.graphics.getHeight());
-        namesMachine =  new ArrayList<>();
         //TODO Eliminar ejemplo
         namesMachine.add("Uno");
         namesMachine.add("Dos");
-        initComponentes();
-        addComponentes();
-        putComponentes();
-        gestionEventos();
         makeTileMap();
     }
 
@@ -108,9 +109,9 @@ public class SalaScreen implements Screen, StageInterface {
 
     @Override
     public void initComponentes() {
-        skin= new Skin(Gdx.files.internal("pruebaSkin/uiskin.json"));
+        skin= game.skin;
         stage = new Stage();
-        Gdx.input.setInputProcessor(stage);
+
         btnStats = new TextButton("Estadisticas", skin);
         windowStats = new Window("Estadisticas", skin);
         btnTienda = new TextButton("Tienda", skin);

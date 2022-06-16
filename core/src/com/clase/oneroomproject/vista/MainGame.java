@@ -4,6 +4,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.clase.oneroomproject.Modelo.GameManager;
 import com.clase.oneroomproject.Modelo.TileSetManager;
@@ -48,6 +49,8 @@ public class MainGame extends Game {
 	/**
 	 * TileSetManager
 	 */
+
+	Skin skin;
 
 	TileSetManager tsm;
 	AssetManager assetManager;
@@ -109,6 +112,7 @@ public class MainGame extends Game {
 	 */
 	private void LoadGameAssets()
 	{
+		skin = new Skin(Gdx.files.internal("pruebaSkin/uiskin.json"));
 		tsm.loadTileSet("PruebasAssets/tiles.png", "tileSetSotanoBg", 128, 128);
 		tsm.loadTileSet("PruebasAssets/PruebaMap.png", "tileSetSotanoMc", 8,8);
 		gm.mcLoader.LoadFromJSON(Gdx.files.internal("data/testMachines.json"));

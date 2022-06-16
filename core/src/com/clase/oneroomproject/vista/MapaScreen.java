@@ -28,18 +28,19 @@ public class MapaScreen implements Screen, StageInterface {
     public MapaScreen(MainGame game)
     {
         this.game=game;
-    }
-
-    @Override
-    public void show() {
         batchG = game.getBatch();
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, 0, 0);
-        fondo = new Texture("PruebasAssets\\mapa.png");
+        fondo = new Texture("PruebasAssets/mapa.png");
         initComponentes();
         addComponentes();
         putComponentes();
         gestionEventos();
+    }
+
+    @Override
+    public void show() {
+        camera.setToOrtho(false, 0, 0);
+        Gdx.input.setInputProcessor(stage);
     }
 
     @Override
@@ -74,8 +75,7 @@ public class MapaScreen implements Screen, StageInterface {
     @Override
     public void initComponentes() {
         stage = new Stage();
-        Gdx.input.setInputProcessor(stage);
-        skin = new Skin(Gdx.files.internal("pruebaSkin/uiskin.json"));
+        skin = game.skin;
         btnSala1 = new Button(skin);
         btnSala2 = new Button(skin);
     }

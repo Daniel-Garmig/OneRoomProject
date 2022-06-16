@@ -23,14 +23,15 @@ public class OnlineScreen implements Screen, StageInterface {
 
     public OnlineScreen(MainGame game) {
         this.game = game;
-    }
-
-    @Override
-    public void show() {
         initComponentes();
         addComponentes();
         putComponentes();
         gestionEventos();
+    }
+
+    @Override
+    public void show() {
+        Gdx.input.setInputProcessor(stage);
     }
 
     @Override
@@ -61,9 +62,8 @@ public class OnlineScreen implements Screen, StageInterface {
     @Override
     public void initComponentes()
     {
-        skin = new Skin(Gdx.files.internal("pruebaSkin/uiskin.json"));
+        skin = game.skin;
         stage = new Stage();
-        Gdx.input.setInputProcessor(stage);
         txtID = new TextField("Introduce el ID del jugador:", skin);
         btnAtras = new TextButton("Atras", skin);
         btnBuscar = new TextButton("Buscar", skin);
