@@ -1,7 +1,7 @@
 {
 "RoomName": "testRoom",
 "RoomSize": {
-	"x": 8,
+	"x": 9,
 	"y": 5
 },
 "RoomPrice": 250,
@@ -13,11 +13,11 @@
 },
 "BackGroundTileSet": "testTiles",
 "BackgroundData": [
-	[ 2, 2, 2, 2, 2, 2, 2, 2 ],
-	[ 2, 3, 3, 3, 3, 3, 3, 2 ],
-	[ 2, 3, 3, 3, 3, 3, 3, 2 ],
-	[ 2, 3, 3, 3, 3, 3, 3, 2 ],
-	[ 2, 2, 2, 2, 2, 2, 2, 2 ]
+	[ 5, 2, 2, 2, 2, 2, 2, 2, 5 ],
+	[ 2, 3, 3, 3, 3, 3, 3, 2, 5 ],
+	[ 2, 3, 3, 3, 3, 3, 3, 2, 5 ],
+	[ 2, 3, 3, 3, 3, 3, 3, 2, 5 ],
+	[ 2, 2, 2, 2, 2, 2, 2, 2, 5 ]
 ],
 "MaquinasData": [
 	[
@@ -28,9 +28,11 @@
 		null,
 		null,
 		null,
+		null,
 		null
 	],
 	[
+		null,
 		null,
 		null,
 		null,
@@ -48,19 +50,22 @@
 		"base_raspi_mk1",
 		null,
 		null,
-		null
-	],
-	[
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
 		null,
 		null
 	],
 	[
+		null,
+		null,
+		null,
+		null,
+		null,
+		null,
+		null,
+		null,
+		null
+	],
+	[
+		null,
 		null,
 		null,
 		null,

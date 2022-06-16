@@ -13,24 +13,41 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileSet;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Align;
 import com.clase.oneroomproject.Modelo.Machine;
 import com.clase.oneroomproject.Modelo.Room;
 import com.clase.oneroomproject.Modelo.RoomLoader;
 import com.sun.org.apache.xpath.internal.operations.Or;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 public class SalaScreen implements Screen, StageInterface {
 
     private MainGame game;
-    OrthographicCamera camera;
-    Texture marco;
-    SpriteBatch batchG;
-    Stage stage;
-    Skin skin;
-    TiledMap map;
-    OrthogonalTiledMapRenderer mapRenderer;
+    private OrthographicCamera camera;
+    private Texture marco;
+    private SpriteBatch batchG;
+    private Stage stage;
+    private Skin skin;
+    private TiledMap map;
+    private OrthogonalTiledMapRenderer mapRenderer;
 
+    private TextButton btnStats;
+    private TextButton btnTienda;
+    /**
+     * Window con las estadísticas
+     */
+    private Window windowStats;
+    private Window windowTienda;
+    private TextButton btnCerrarStats;
+    private TextButton btnCerrarTienda;
+    private ArrayList<String> namesMachine;
 
     public SalaScreen(MainGame game){
         this.game = game;
@@ -42,7 +59,14 @@ public class SalaScreen implements Screen, StageInterface {
         batchG = game.getBatch();
         camera = new OrthographicCamera();
         camera.setToOrtho(false, (float)Gdx.graphics.getWidth(), (float)Gdx.graphics.getHeight());
+        namesMachine =  new ArrayList<>();
+        //TODO Eliminar ejemplo
+        namesMachine.add("Uno");
+        namesMachine.add("Dos");
         initComponentes();
+        addComponentes();
+        putComponentes();
+        gestionEventos();
         makeTileMap();
     }
 
@@ -53,9 +77,9 @@ public class SalaScreen implements Screen, StageInterface {
 
         mapRenderer.setView(camera);
         mapRenderer.render();
-        /*batchG.begin();
-        //batchG.draw(marco, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        batchG.end();*/
+        batchG.begin();
+        batchG.draw(marco, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        batchG.end();
         stage.draw();
         stage.act(Gdx.graphics.getDeltaTime());
 
@@ -83,7 +107,6 @@ public class SalaScreen implements Screen, StageInterface {
 
     @Override
     public void dispose() {
-
     }
 
 
@@ -92,21 +115,89 @@ public class SalaScreen implements Screen, StageInterface {
         skin= new Skin(Gdx.files.internal("pruebaSkin/uiskin.json"));
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
+        btnStats = new TextButton("Estadisticas", skin);
+        windowStats = new Window("Estadisticas", skin);
+        btnTienda = new TextButton("Tienda", skin);
+        btnCerrarStats = new TextButton("Cerrar", skin);
+        windowTienda = new Window("Tienda", skin);
+        btnCerrarTienda = new TextButton("Cerrar", skin);
     }
 
     @Override
     public void addComponentes() {
-
+        stage.addActor(btnStats);
+        stage.addActor(btnTienda);
     }
 
     @Override
     public void putComponentes() {
-
+        btnStats.setSize(100f,20f);
+        btnTienda.setSize(100f, 20f);
+        windowStats.setSize(800f, 400f);
+        windowTienda.setSize(800f, 400f);
+        btnStats.setPosition(800f,((float) Gdx.graphics.getHeight())-btnStats.getHeight()-12f);
+        btnTienda.setPosition(btnStats.getX()+btnStats.getWidth()+15f,btnStats.getY());
+        windowStats.setPosition(((float) Gdx.graphics.getWidth()/2f)-(windowStats.getWidth()/2f), ((float) Gdx.graphics.getHeight()/2f)-(windowStats.getHeight()/2f));
+        windowTienda.setPosition(windowStats.getX(), windowStats.getY());
     }
 
     @Override
     public void gestionEventos() {
+        btnStats.addListener(new ChangeListener(){
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                windowStats.addActor(btnCerrarStats);
+                stage.addActor(windowStats);
 
+                btnCerrarStats.addListener(new ChangeListener() {
+                    @Override
+                    public void changed(ChangeEvent event, Actor actor) {
+                        windowStats.remove();
+                    }
+                });
+            }
+        });
+        btnTienda.addListener(new ChangeListener(){
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                /**
+                 * Los objetos Window por dentro son tablas (heredan de Table y funcinoan como tablas)
+                 * Cada vez que escribes row() terminas una fila
+                 */
+                stage.addActor(windowTienda);
+                windowTienda.add(btnCerrarTienda).align(Align.topRight).expandX().expandY().row();
+                windowTienda.getTitleLabel().setAlignment(Align.center);
+                crearLabels(namesMachine.size(), namesMachine);
+
+                /**
+                 * Evento para cerrar la Window
+                 */
+                btnCerrarTienda.addListener(new ChangeListener() {
+                    @Override
+                    public void changed(ChangeEvent event, Actor actor) {
+                        windowTienda.remove();
+                    }
+                });
+
+
+
+            }
+        });
+
+        stage.addListener(new ClickListener(){
+        });
+    }
+    //TODO Crear un método para recorrer un array de imágenes y crear ImageButtons
+
+    /**
+     * Método para la creación de labels dentro de la Window
+     * @param numLabels
+     */
+    private void crearLabels(int numLabels, ArrayList<String> n){
+        for (int i = 0; i < numLabels; i++){
+            windowTienda.add(new Label(n.get(i), skin)).expandX().expandY();
+        }
+        windowTienda.row();
     }
 
     /**
@@ -134,6 +225,10 @@ public class SalaScreen implements Screen, StageInterface {
         mcLayer.setName("mcLayer");
         layers.add(mcLayer);
 
+        //Shadow Layer
+        TiledMapTileLayer shadowLayer = new TiledMapTileLayer((int)rmSize.x, (int)rmSize.y, 128, 128);
+        shadowLayer.setName("shadowLayer");
+        layers.add(shadowLayer);
         UpdateTileMap();
     }
 
@@ -194,7 +289,7 @@ public class SalaScreen implements Screen, StageInterface {
             }
         }
 
-
-
     }
+
+
 }
