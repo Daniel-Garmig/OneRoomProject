@@ -6,7 +6,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 
-public class CargandoScreen implements Screen {
+public class CargandoScreen implements Screen
+{
     /**
      * Dependencia de la clase Game para poder acceder a ella
      */
@@ -23,24 +24,30 @@ public class CargandoScreen implements Screen {
      * Cámara
      */
     OrthographicCamera camera;
+
+
     /**
      * Constructor de la clase con la inicialización de las propiedades del objeto
      * @param game Tipo MainGame
      */
-    public CargandoScreen(MainGame game) {
+    public CargandoScreen(MainGame game)
+    {
         this.game=game;
+        batchG = game.getBatch();
+
+        carganadoFondo = new Texture("PruebasAssets/cargandoFondo.jpg");
     }
 
     @Override
-    public void show() {
-        batchG = game.getBatch();
-        carganadoFondo= new Texture("PruebasAssets/cargandoFondo.jpg");
+    public void show()
+    {
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 0, 0);
     }
 
     @Override
-    public void render(float delta) {
+    public void render(float delta)
+    {
         ScreenUtils.clear(0, 0, 0, 0);
         //Con el objeto de tipo SpriteBatch dibujamos la imagen de fondo
         batchG.begin();
@@ -49,26 +56,20 @@ public class CargandoScreen implements Screen {
     }
 
     @Override
-    public void resize(int width, int height) {
-
-    }
+    public void resize(int width, int height) {}
 
     @Override
-    public void pause() {
-
-    }
+    public void pause() {}
 
     @Override
-    public void resume() {
-
-    }
+    public void resume() {}
 
     @Override
-    public void hide() {
-
-    }
+    public void hide() {}
 
     @Override
-    public void dispose() {
+    public void dispose()
+    {
+        carganadoFondo.dispose();
     }
 }

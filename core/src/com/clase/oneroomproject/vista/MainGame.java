@@ -1,18 +1,12 @@
 package com.clase.oneroomproject.vista;
 
-import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.maps.tiled.TiledMapTileSet;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.clase.oneroomproject.Modelo.GameManager;
 import com.clase.oneroomproject.Modelo.TileSetManager;
-
-import java.util.concurrent.TimeoutException;
 
 public class MainGame extends Game {
 	/**
@@ -36,9 +30,13 @@ public class MainGame extends Game {
 	 */
 	MapaScreen mapa;
 	/**
-	 * Pantalla de loggin
+	 * Pantalla de logging (Cuando no hay datos del jugador.)
 	 */
-	LogginScreen loggin;
+	LoggingScreen logging;
+	/**
+	 * Pantalla de la primera vez (cuando no tienes una partida creada).
+	 */
+	pVezScreen pvScreen;
 	/**
 	 * Clase api (GameManager)
 	 */
@@ -50,9 +48,10 @@ public class MainGame extends Game {
 	/**
 	 * TileSetManager
 	 */
+
 	TileSetManager tsm;
 	AssetManager assetManager;
-	
+
 	@Override
 	public void create () {
 		init();
@@ -63,11 +62,17 @@ public class MainGame extends Game {
 		ScreenUtils.clear(0, 0, 0, 1);
 		super.render(); // IMPORTANTE //SIN ESTO NO FUNCIONA NADA XD
 	}
-	
+
 	@Override
-	public void dispose () {
+	public void dispose ()
+	{
 		batch.dispose();
 		cargando.dispose();
+		menu.dispose();
+		online.dispose();
+		mapa.dispose();
+		logging.dispose();
+		salaG.dispose();
 	}
 
 	//Getters y Setters
@@ -75,23 +80,37 @@ public class MainGame extends Game {
 	public SpriteBatch getBatch() {
 		return batch;
 	}
-	private void init(){
-		try{
+
+	private void init()
+	{
+		try
+		{
 			batch = new SpriteBatch();
 			//Inicialización de las Screen del juego
 			cargando = new CargandoScreen(this);
 			menu = new MainMenuScreen(this);
 			online = new OnlineScreen(this);
 			mapa = new MapaScreen(this);
-			loggin = new LogginScreen(this);
+			logging = new LoggingScreen(this);
 			salaG = new SalaScreen(this);
 			tsm = new TileSetManager();
-			tsm.loadTileSet("PruebasAssets/tiles.png", "tileSetSotanoBg", 128, 128);
-			tsm.loadTileSet("PruebasAssets/PruebaMap.png", "tileSetSotanoMc", 8,8);
-			gm.mcLoader.LoadFromJSON(Gdx.files.internal("data/testMachines.json"));
+
+			LoadGameAssets();
+
 			setScreen(menu);
-		}catch (Exception e){
+		} catch (Exception e)
+		{
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * Carga todas las texturas y datos internos necesarios.
+	 */
+	private void LoadGameAssets()
+	{
+		tsm.loadTileSet("PruebasAssets/tiles.png", "tileSetSotanoBg", 128, 128);
+		tsm.loadTileSet("PruebasAssets/PruebaMap.png", "tileSetSotanoMc", 8,8);
+		gm.mcLoader.LoadFromJSON(Gdx.files.internal("data/testMachines.json"));
 	}
 }

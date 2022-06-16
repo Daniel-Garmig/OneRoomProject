@@ -18,7 +18,8 @@ import org.w3c.dom.Text;
 
 import java.io.File;
 
-public class MainMenuScreen implements Screen, StageInterface {
+public class MainMenuScreen implements Screen, StageInterface
+{
     /**
      * Dependencia de la clase Game para poder acceder a ella
      */
@@ -51,20 +52,23 @@ public class MainMenuScreen implements Screen, StageInterface {
      * Skin para darle formato a todos los objetos de Scene2D
      */
     private Skin skin;
+
     /**
      * Constructor de la clase
      * @param game Tipo Game
      */
-    public MainMenuScreen(MainGame game){
+    public MainMenuScreen(MainGame game)
+    {
         this.game=game;
+        batchG = game.getBatch();
+
+        fondo = new Texture("PruebasAssets/cargandoFondo.jpg");
     }
 
     @Override
     public void show() {
-        batchG = game.getBatch();
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 0, 0);
-        fondo = new Texture("PruebasAssets\\cargandoFondo.jpg");
         initComponentes();
         addComponentes();
         putComponentes();
@@ -83,32 +87,29 @@ public class MainMenuScreen implements Screen, StageInterface {
     }
 
     @Override
-    public void resize(int width, int height) {
+    public void resize(int width, int height)
+    {
         stage.getViewport().update(width, height);
     }
 
     @Override
-    public void pause() {
-
-    }
+    public void pause() {}
 
     @Override
-    public void resume() {
-
-    }
+    public void resume() {}
 
     @Override
-    public void hide() {
-
-    }
+    public void hide() {}
 
     @Override
-    public void dispose() {
+    public void dispose()
+    {
         stage.dispose();
     }
 
     @Override
-    public void initComponentes() {
+    public void initComponentes()
+    {
         skin = new Skin(Gdx.files.internal("pruebaSkin/uiskin.json"));
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
@@ -117,36 +118,45 @@ public class MainMenuScreen implements Screen, StageInterface {
     }
 
     @Override
-    public void addComponentes(){
+    public void addComponentes() {
         stage.addActor(btnJugar);
         stage.addActor(btnOnline);
     }
+
     @Override
-    public void putComponentes(){
+    public void putComponentes() {
         btnOnline.setWidth(250f);
         btnJugar.setWidth(250f);
         btnOnline.setPosition(((float) Gdx.graphics.getWidth()/2f)-(btnOnline.getWidth()/2f), ((float) Gdx.graphics.getHeight())-((float) Gdx.graphics.getHeight()/2f));
         btnJugar.setPosition(((float) Gdx.graphics.getWidth()/2f)-((float) btnJugar.getWidth()/2f), (float) btnOnline.getY()-50f);
     }
+
     @Override
-    public void gestionEventos(){
-        btnJugar.addListener(new ChangeListener() {
+    public void gestionEventos()
+    {
+        btnJugar.addListener(new ChangeListener()
+        {
             @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                //Si el .json no existe entonces cargará por primera vez el juego y creará el json
-                //Por el momento siempre pondrá el mapa
-                //Todo Utilizar método del GameManager.loadJson
-                if (!game.gm.ComprobarExistePartida()){
-                    game.setScreen(game.loggin);
-                }else{
+            public void changed(ChangeEvent event, Actor actor)
+            {
+                //Si el json de partida no existe entonces cargará por primera vez el juego y creará el json
+                if (!game.gm.ComprobarExistePartida())
+                {
+                    game.setScreen(game.pvScreen);
+                }else
+                {
+                    //Cargamos la partida.
                     game.gm.LoadGameFromJSON();
                     game.setScreen(game.mapa);
                 }
             }
         });
-        btnOnline.addListener(new ChangeListener() {
+
+        btnOnline.addListener(new ChangeListener()
+        {
             @Override
-            public void changed(ChangeEvent event, Actor actor) {
+            public void changed(ChangeEvent event, Actor actor)
+            {
                 game.setScreen(game.online);
             }
         });

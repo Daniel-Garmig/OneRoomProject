@@ -12,7 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
-public class LogginScreen implements Screen, StageInterface{
+public class LoggingScreen implements Screen, StageInterface{
 
     private MainGame game;
     private Stage stage;
@@ -24,7 +24,7 @@ public class LogginScreen implements Screen, StageInterface{
     private OrthographicCamera camera;
     private TextButton btnAceptar;
     private TextButton btnCancelar;
-    public LogginScreen(MainGame game) {
+    public LoggingScreen(MainGame game) {
         this.game = game;
     }
 
@@ -47,28 +47,21 @@ public class LogginScreen implements Screen, StageInterface{
     }
 
     @Override
-    public void resize(int width, int height) {
-
-    }
+    public void resize(int width, int height) {}
 
     @Override
-    public void pause() {
-
-    }
+    public void pause() {}
 
     @Override
-    public void resume() {
-
-    }
+    public void resume() {}
 
     @Override
-    public void hide() {
-
-    }
+    public void hide() {}
 
     @Override
-    public void dispose() {
-
+    public void dispose()
+    {
+        stage.dispose();
     }
 
     @Override

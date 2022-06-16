@@ -49,12 +49,14 @@ public class SalaScreen implements Screen, StageInterface {
     private TextButton btnCerrarTienda;
     private ArrayList<String> namesMachine;
 
-    public SalaScreen(MainGame game){
+    public SalaScreen(MainGame game)
+    {
         this.game = game;
     }
 
     @Override
-    public void show() {
+    public void show()
+    {
         marco = new Texture("PruebasAssets/marco.png");
         batchG = game.getBatch();
         camera = new OrthographicCamera();
@@ -86,27 +88,21 @@ public class SalaScreen implements Screen, StageInterface {
     }
 
     @Override
-    public void resize(int width, int height) {
-
-    }
+    public void resize(int width, int height) {}
 
     @Override
-    public void pause() {
-
-    }
+    public void pause() {}
 
     @Override
-    public void resume() {
-
-    }
+    public void resume() {}
 
     @Override
-    public void hide() {
-
-    }
+    public void hide() {}
 
     @Override
-    public void dispose() {
+    public void dispose()
+    {
+        stage.dispose();
     }
 
 
@@ -142,24 +138,32 @@ public class SalaScreen implements Screen, StageInterface {
     }
 
     @Override
-    public void gestionEventos() {
-        btnStats.addListener(new ChangeListener(){
+    public void gestionEventos()
+    {
+        btnStats.addListener(new ChangeListener()
+        {
             @Override
-            public void changed(ChangeEvent event, Actor actor) {
+            public void changed(ChangeEvent event, Actor actor)
+            {
                 windowStats.addActor(btnCerrarStats);
                 stage.addActor(windowStats);
 
-                btnCerrarStats.addListener(new ChangeListener() {
+                btnCerrarStats.addListener(new ChangeListener()
+                {
                     @Override
-                    public void changed(ChangeEvent event, Actor actor) {
+                    public void changed(ChangeEvent event, Actor actor)
+                    {
                         windowStats.remove();
                     }
                 });
             }
         });
-        btnTienda.addListener(new ChangeListener(){
+
+        btnTienda.addListener(new ChangeListener()
+        {
             @Override
-            public void changed(ChangeEvent event, Actor actor) {
+            public void changed(ChangeEvent event, Actor actor)
+            {
                 /**
                  * Los objetos Window por dentro son tablas (heredan de Table y funcinoan como tablas)
                  * Cada vez que escribes row() terminas una fila
@@ -172,14 +176,14 @@ public class SalaScreen implements Screen, StageInterface {
                 /**
                  * Evento para cerrar la Window
                  */
-                btnCerrarTienda.addListener(new ChangeListener() {
+                btnCerrarTienda.addListener(new ChangeListener()
+                {
                     @Override
-                    public void changed(ChangeEvent event, Actor actor) {
+                    public void changed(ChangeEvent event, Actor actor)
+                    {
                         windowTienda.remove();
                     }
                 });
-
-
 
             }
         });

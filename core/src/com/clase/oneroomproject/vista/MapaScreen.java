@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.clase.oneroomproject.Modelo.SaveLoader;
 
 public class MapaScreen implements Screen, StageInterface {
 
@@ -24,7 +25,8 @@ public class MapaScreen implements Screen, StageInterface {
     private Button btnSala2;
     private Skin skin;
 
-    public MapaScreen(MainGame game){
+    public MapaScreen(MainGame game)
+    {
         this.game=game;
     }
 
@@ -49,30 +51,19 @@ public class MapaScreen implements Screen, StageInterface {
         batchG.end();
         stage.draw();
         stage.act(Gdx.graphics.getDeltaTime());
-        if (Gdx.input.isTouched()){
-            System.out.println((float) Gdx.input.getX() + "y:" + (float) Gdx.input.getY());
-        }
     }
 
     @Override
-    public void resize(int width, int height) {
-
-    }
+    public void resize(int width, int height) {}
 
     @Override
-    public void pause() {
-
-    }
+    public void pause() {}
 
     @Override
-    public void resume() {
-
-    }
+    public void resume() {}
 
     @Override
-    public void hide() {
-
-    }
+    public void hide() {}
 
     @Override
     public void dispose() {
@@ -104,23 +95,26 @@ public class MapaScreen implements Screen, StageInterface {
     }
 
     @Override
-    public void gestionEventos() {
+    public void gestionEventos()
+    {
         //TODO cada btn cargará e iniciará una sala
         //TODO Si un jugador tiene comprada una sala podrá cargar la información al hacer click sobre ella, sino le aparecera un dialog para comprarla
-        btnSala1.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                /*
-                if (game.gm.saveData.ownedRooms.get("sotano")){
-                    game.gm.rmLoader.SetCurrentRoom("sotano");
-                    //TODO Cargar sala genérica
 
-                }else{
-                    ;
+        //Click en el botón de la sala del sótano.
+        btnSala1.addListener(new ChangeListener()
+        {
+            @Override
+            public void changed(ChangeEvent event, Actor actor)
+            {
+                //Comprobamos si tiene comprada la sala.
+                if (game.gm.saveData.ownedRooms.get("testRoom"))
+                {
+                    game.gm.rmLoader.SetCurrentRoom("testRoom");
+                    game.setScreen(game.salaG);
+                }else
+                {
+                    //Saldrá el menú para comprar la sala.
                 }
-                */
-                game.gm.rmLoader.SetCurrentRoom("testRoom");
-                game.setScreen(game.salaG);
             }
         });
     }
