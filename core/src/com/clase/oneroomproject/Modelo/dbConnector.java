@@ -133,7 +133,30 @@ public class dbConnector
      */
     public static void AddNewUser(LoginData datosUsuario)
     {
-        //TODO: Añadir un nuevo usuario a la BD.
+        //Comprobamos que tenemos datos.
+        if(datosUsuario == null)
+        {
+            Gdx.app.error("dbConnector", "No se puede crear un usuario. " +
+                    "Los datos de usuario están vacíos.");
+            return;
+        }
+
+        //Creamos el Statement.
+        Statement stt = CrearStatement();
+
+        //Añadimos el nuevo usuario.
+        String query = "INSERT INTO usuarios(nickname,passwd) VALUE (' " + datosUsuario.nickname +
+                "','" + datosUsuario.password + "');";
+        try
+        {
+            stt.execute("query");
+        } catch (SQLException e)
+        {
+            Gdx.app.error("dbConnector", "No se ha podido añadir el nuevo usuario: " + datosUsuario.nickname);
+        }
+
+        //Al terminar, cerramos el Statement.
+        CerrarStatement(stt);
     }
 
     /**
@@ -144,8 +167,37 @@ public class dbConnector
      */
     public static boolean AutentificarUsuario(LoginData datosUsuario)
     {
-        //TODO: Realiza la autentificación del usuario usando el procedimiento de la BD.
-        return true;
+        //Comprobamos que los datos de usuario son correctos.
+        if(datosUsuario == null)
+        {
+            Gdx.app.error("dbConnector", "No se puede crear autentificar el usuario. " +
+                    "Los datos de usuario están vacíos.");
+            return false;
+        }
+
+        //Creamos el Statement.
+        Statement stt = CrearStatement();
+
+        //Utilizamos el procedimiento de autentificación que tenemos en la BD.
+        String query = "SELECT validar('" + datosUsuario.nickname +
+                "','" + datosUsuario.password + "');";
+        boolean autentificado = false;
+        try
+        {
+            ResultSet rs = stt.executeQuery("query");
+            //Obtenemos el resultado de la consulta.
+            rs.next();
+            autentificado = rs.getBoolean(0);
+
+        } catch (SQLException e)
+        {
+            Gdx.app.error("dbConnector", "No se ha podido autentificar el usuario " + datosUsuario.nickname);
+            return false;
+        }
+
+        //Al terminar, cerramos el Statement.
+        CerrarStatement(stt);
+        return autentificado;
     }
 
     /**
@@ -185,10 +237,11 @@ public class dbConnector
         Statement stt = CrearStatement();
 
         //Obtenemos el ID de partida.
+        String query = "SELECT id FROM partidas WHERE nickname_usuario='" + username + "';";
         int id = -1;
         try
         {
-            ResultSet set = stt.executeQuery("select id from partidas where nickname_usuario = '" + username + "';");
+            ResultSet set = stt.executeQuery(query);
             id = set.getInt(0);
         } catch (SQLException e)
         {
@@ -210,13 +263,13 @@ public class dbConnector
     {
         //Obtenemos los datos necesarios.
         int idPartida = GetIDPartidaFromDB();
-        Room r = RoomLoader.getInstance().GetRoomByID(roomName);
+        String roomData = RoomLoader.getInstance().GetRoomJSON(roomName);
 
         //Comprobamos que se ha obtenido la sala.
-        if(r == null)
+        if(roomData.equals(""))
         {
             Gdx.app.error("dbConnector", "No se puede añadir la sala " + roomName +
-                    ". Puede ser que no esté cargada en el RoomLoader.");
+                    ". No se han podido obtener los datos de la sala desde el RoomLoader.");
             return;
         }
 
@@ -224,10 +277,13 @@ public class dbConnector
         Statement stt = CrearStatement();
 
         //Añadimos la nueva sala a la DB.
+        String query = "INSERT INTO salas(nombre,id_partida,sala_data) VALUE ('"
+                + roomName + "',"
+                + idPartida + ",'"
+                + roomData + "');";
         try
         {
-            //FIXME: Arreglar Querry.
-            stt.execute("insert into ....");
+            stt.execute(query);
         } catch (SQLException e)
         {
             Gdx.app.error("dbConnector", "No se ha podido añadir la nueva sala " + roomName);
@@ -244,8 +300,36 @@ public class dbConnector
      */
     public static void AddNewSaveDataToDB(Save datosPartida)
     {
-        //TODO: Guardar los datos de la partida.
-        //  Se insertan los datos (el ID de partida es auto_increment).
+        //Obtenemos los datos que necesitamos.
+        String username = LoginSystem.GetUserName();
+        int puntuacionTotal = GameManager.getInstance().GetPuntuacionTotal();
+
+        //Comprobamos que tenemos los datos de la partida.
+        if(datosPartida == null)
+        {
+            Gdx.app.error("dbConnector", "No se ha podido crear una nueva partida. " +
+                    "Los datos de partida están vacíos.");
+            return;
+        }
+
+        //Creamos el Statement.
+        Statement stt = CrearStatement();
+
+        //Añadimos la nueva partida a la DB.
+        String query = "INSERT INTO partidas(nickname_usuario,dinero,puntuacion) VALUE ('"
+                + username + "',"
+                + datosPartida.dinero + ","
+                + puntuacionTotal + ");";
+        try
+        {
+            stt.execute(query);
+        } catch (SQLException e)
+        {
+            Gdx.app.error("dbConnector", "No se ha podido crear una nueva partida para el usuario " + username);
+        }
+
+        //Al terminar, cerramos el Statement.
+        CerrarStatement(stt);
     }
 
 
@@ -254,8 +338,35 @@ public class dbConnector
      */
     public static void SaveSaveDataToDB(Save datosPartida, int puntuacionTotal)
     {
-        //TODO: Guardar los datos.
-        //  También habrá que guardar la puntuación total.
+        //Obtenemos los datos que necesitamos.
+        String username = LoginSystem.GetUserName();
+
+        //Comprobamos que tenemos los datos de la partida.
+        if(datosPartida == null)
+        {
+            Gdx.app.error("dbConnector", "No se ha podido actualizar la partida. " +
+                    "Los datos de partida están vacíos.");
+            return;
+        }
+
+        //Creamos el Statement.
+        Statement stt = CrearStatement();
+
+        //Actualizamos los datos de la partida.
+        String query = "UPDATE partida SET " +
+                "dinero=" + datosPartida.dinero + "," +
+                "puntuacion=" + puntuacionTotal + "," +
+                "where nickname_usuario='" + username + "';";
+        try
+        {
+            stt.execute(query);
+        } catch (SQLException e)
+        {
+            Gdx.app.error("dbConnector", "No se ha podido actualizar los datos de partida para el usuario " + username);
+        }
+
+        //Al terminar, cerramos el Statement.
+        CerrarStatement(stt);
 
     }
 
@@ -280,13 +391,13 @@ public class dbConnector
 
         //Creamos el Statement.
         Statement stt = CrearStatement();
-
+        String query = "update salas set sala_data = '" + roomJSON + "' " +
+                "where nombre = '" + roomName + "' and " +
+                "id_partida = " + idPartida + ";";
         //Subimos la sala a la DB.
         try
         {
-            stt.executeUpdate("update salas set sala_data = '" + roomJSON + "' " +
-                    "where nombre = '" + roomName + "' and " +
-                    "id_partida = " + idPartida + ";");
+            stt.executeUpdate(query);
         } catch (SQLException e)
         {
             Gdx.app.error("dbConnector", "No se ha podido actualizar la sala " + roomName);
@@ -310,20 +421,39 @@ public class dbConnector
         Statement stt = CrearStatement();
 
         Save s = new Save();
+
         //Obtenemos el dinero.
+        String queryDinero = "SELECT dinero FROM partidas WHERE " +
+                "id = " + idPartidaUser + " AND " +
+                "nickname_usuario = '" + username + "';";
         try
         {
-            ResultSet rs = stt.executeQuery("select dinero from partidas where " +
-                    "id = " + idPartidaUser + " and " +
-                    "nickname_usuario = '" + username + "';");
+            ResultSet rs = stt.executeQuery(queryDinero);
             s.dinero = rs.getInt(0);
         } catch (SQLException e)
         {
             Gdx.app.error("dbConnector", "No se ha podido cargar la partida del usuario " + username);
         }
 
-        //FIXME: También tiene que obtener una lista con las salas que se tienen
-        //  Es necesario para rellenar el HashMap de salas compradas y poder cargarlas.
+        //Obtenemos la lista de las salas que tiene el usuario.
+        String querySalas = "SELECT nombre FROM salas WHERE " +
+                "id_partida = " + idPartidaUser + ";";
+        try
+        {
+            ResultSet rs = stt.executeQuery(querySalas);
+
+            //Iteramos por las salas, añadiéndolas al Save.
+            while(rs.next())
+            {
+                String nombreSala = rs.getString(0);
+                //Indicamos que tiene esa sala comprada.
+                s.ownedRooms.put(nombreSala, true);
+            }
+
+        } catch (SQLException e)
+        {
+            Gdx.app.error("dbConnector", "No se ha podido cargar la partida del usuario " + username);
+        }
 
         CerrarStatement(stt);
 
@@ -346,15 +476,17 @@ public class dbConnector
 
         //Obtenemos el JSON de la sala desde la DB.
         String datosJSON = "";
+        String query = "SELECT sala_data FROM salas WHERE" +
+                "nombre = '" + roomName + "' AND " +
+                "id_partida = " + idPartida + ";";
         try
         {
-            ResultSet rs = stt.executeQuery("select sala_data from salas where" +
-                    "nombre = '" + roomName + "' and " +
-                    "id_partida = " + idPartida + ";");
+            ResultSet rs = stt.executeQuery(query);
             datosJSON = rs.getString(0);
         } catch (SQLException e)
         {
-            Gdx.app.error("dbConnector", "No se han podido obtener los datos de la " + roomName);
+            Gdx.app.error("dbConnector", "No se han podido obtener los datos de la " + roomName +
+                    " del usuario " + username);
         }
         CerrarStatement(stt);
 
