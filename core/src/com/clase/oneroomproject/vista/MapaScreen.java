@@ -110,7 +110,7 @@ public class MapaScreen implements Screen, StageInterface {
                 if (game.gm.saveData.ownedRooms.get("testRoom"))
                 {
                     game.gm.rmLoader.SetCurrentRoom("testRoom");
-                    game.setScreen(game.salaG);
+                    game.setScreen(new SalaScreen(game));
                 }else
                 {
                     //Saldrá el menú para comprar la sala.

@@ -5,8 +5,9 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.maps.Map;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -18,14 +19,17 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.clase.oneroomproject.Modelo.Machine;
+import com.clase.oneroomproject.Modelo.MachineLoader;
 import com.clase.oneroomproject.Modelo.Room;
 import com.clase.oneroomproject.Modelo.RoomLoader;
-import com.sun.org.apache.xpath.internal.operations.Or;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 
 public class SalaScreen implements Screen, StageInterface {
 
@@ -46,8 +50,7 @@ public class SalaScreen implements Screen, StageInterface {
     private Window windowStats;
     private Window windowTienda;
     private TextButton btnCerrarStats;
-    private TextButton btnCerrarTienda;
-    private ArrayList<String> namesMachine;
+    private HashMap<String, ArrayList<String>> mcTiendaEnSala;
 
     public SalaScreen(MainGame game)
     {
@@ -58,7 +61,14 @@ public class SalaScreen implements Screen, StageInterface {
         addComponentes();
         putComponentes();
         gestionEventos();
-        namesMachine =  new ArrayList<>();
+
+        mcTiendaEnSala = new HashMap<>();
+
+        ArrayList<String> mcSotano = new ArrayList<>();
+        mcSotano.add("base_raspi_mk1");
+        mcSotano.add("test_mach2");
+
+        mcTiendaEnSala.put("testRoom", mcSotano);
     }
 
     @Override
@@ -67,9 +77,6 @@ public class SalaScreen implements Screen, StageInterface {
         Gdx.input.setInputProcessor(stage);
         marco = new Texture("PruebasAssets/marco.png");
         camera.setToOrtho(false, (float)Gdx.graphics.getWidth(), (float)Gdx.graphics.getHeight());
-        //TODO Eliminar ejemplo
-        namesMachine.add("Uno");
-        namesMachine.add("Dos");
         makeTileMap();
     }
 
@@ -117,23 +124,44 @@ public class SalaScreen implements Screen, StageInterface {
         btnTienda = new TextButton("Tienda", skin);
         btnCerrarStats = new TextButton("Cerrar", skin);
         windowTienda = new Window("Tienda", skin);
-        btnCerrarTienda = new TextButton("Cerrar", skin);
     }
 
     @Override
     public void addComponentes() {
-        stage.addActor(btnStats);
-        stage.addActor(btnTienda);
+        //stage.addActor(btnStats);
+        //stage.addActor(btnTienda);
     }
 
     @Override
     public void putComponentes() {
+
         btnStats.setSize(100f,20f);
         btnTienda.setSize(100f, 20f);
         windowStats.setSize(800f, 400f);
         windowTienda.setSize(800f, 400f);
-        btnStats.setPosition(800f,((float) Gdx.graphics.getHeight())-btnStats.getHeight()-12f);
-        btnTienda.setPosition(btnStats.getX()+btnStats.getWidth()+15f,btnStats.getY());
+
+        windowStats.setResizable(true);
+        windowTienda.setResizable(true);
+
+        HorizontalGroup hGroup = new HorizontalGroup();
+        stage.addActor(hGroup);
+
+        hGroup.align(Align.topRight);
+
+        hGroup.setWidth(Gdx.graphics.getWidth());
+        hGroup.setHeight(Gdx.graphics.getHeight());
+
+        hGroup.addActor(btnStats);
+        hGroup.addActor(btnTienda);
+
+        hGroup.padRight(80);
+        hGroup.padTop(10);
+        hGroup.space(25);
+
+        hGroup.layout();
+
+        //btnStats.setPosition(800f,((float) Gdx.graphics.getHeight())-btnStats.getHeight()-12f);
+        //btnTienda.setPosition(btnStats.getX()+btnStats.getWidth()+15f,btnStats.getY());
         windowStats.setPosition(((float) Gdx.graphics.getWidth()/2f)-(windowStats.getWidth()/2f), ((float) Gdx.graphics.getHeight()/2f)-(windowStats.getHeight()/2f));
         windowTienda.setPosition(windowStats.getX(), windowStats.getY());
     }
@@ -141,20 +169,54 @@ public class SalaScreen implements Screen, StageInterface {
     @Override
     public void gestionEventos()
     {
-        btnStats.addListener(new ChangeListener()
-        {
+        btnStats.addListener(new ChangeListener() {
             @Override
-            public void changed(ChangeEvent event, Actor actor)
-            {
+            public void changed(ChangeEvent event, Actor actor) {
+                btnStats.setDisabled(true);
+
                 windowStats.addActor(btnCerrarStats);
                 stage.addActor(windowStats);
+                windowStats.setDebug(true, true);
 
-                btnCerrarStats.addListener(new ChangeListener()
-                {
+                //Mostramos las estadísticas de la sala.
+                Room r = RoomLoader.getInstance().GetCurrentRoom();
+                //Guardamos el nombre de los recursos.
+                Set<String> nombresRecursos = r.getRecursosOcupados().keySet();
+
+                //Mostramos la información para cada uno de los recursos.
+                VerticalGroup group = new VerticalGroup();
+                group.align(Align.topLeft);
+                group.setFillParent(true);
+                group.columnLeft();
+                group.moveBy(45, -45);
+                windowStats.addActor(group);
+
+                Label roomName = new Label(r.getRoomName(), skin);
+                roomName.setFontScale(1.2f);
+                group.addActor(roomName);
+                group.addActor(new Label("Puntuacion: " + r.getRoomScore(), skin));
+                group.addActor(new Label("Dinero por ciclo: " + r.getDineroPorCiclo(), skin));
+
+                group.addActor(new Label("Precio de compra: " + r.getRoomPrice(), skin));
+
+                group.addActor(new Label("Recursos de la sala: ", skin));
+
+
+                for (String rec : nombresRecursos) {
+                    String rs = "   - " + rec + ": " + 5 + "/" + 10;
+                    group.addActor(new Label(rs, skin));
+                }
+
+                group.validate();
+                group.layout();
+
+
+                btnCerrarStats.addListener(new ChangeListener() {
                     @Override
-                    public void changed(ChangeEvent event, Actor actor)
-                    {
+                    public void changed(ChangeEvent event, Actor actor) {
                         windowStats.remove();
+                        windowStats.clearChildren();
+                        btnStats.setDisabled(false);
                     }
                 });
             }
@@ -170,19 +232,30 @@ public class SalaScreen implements Screen, StageInterface {
                  * Cada vez que escribes row() terminas una fila
                  */
                 stage.addActor(windowTienda);
-                windowTienda.add(btnCerrarTienda).align(Align.topRight).expandX().expandY().row();
+                btnTienda.setDisabled(true);
+
+                TextButton bttCerrar = new TextButton("Cerrar", skin);
+                bttCerrar.align(Align.top);
+                windowTienda.add(bttCerrar).colspan(2);
+
+                windowTienda.setDebug(true, true);
+
+                windowTienda.row();
+
                 windowTienda.getTitleLabel().setAlignment(Align.center);
-                crearLabels(namesMachine.size(), namesMachine);
+                AddMcToTienda();
 
                 /**
                  * Evento para cerrar la Window
                  */
-                btnCerrarTienda.addListener(new ChangeListener()
+                bttCerrar.addListener(new ChangeListener()
                 {
                     @Override
                     public void changed(ChangeEvent event, Actor actor)
                     {
+                        windowTienda.clearChildren();
                         windowTienda.remove();
+                        btnTienda.setDisabled(false);
                     }
                 });
 
@@ -192,15 +265,58 @@ public class SalaScreen implements Screen, StageInterface {
         stage.addListener(new ClickListener(){
         });
     }
-    //TODO Crear un método para recorrer un array de imágenes y crear ImageButtons
 
     /**
      * Método para la creación de labels dentro de la Window
-     * @param numLabels
      */
-    private void crearLabels(int numLabels, ArrayList<String> n){
-        for (int i = 0; i < numLabels; i++){
-            windowTienda.add(new Label(n.get(i), skin)).expandX().expandY();
+    private void AddMcToTienda()
+    {
+        Room r = RoomLoader.getInstance().GetCurrentRoom();
+
+        //Obtenemos la lista con los nombres de las máquinas que puede haber en esa sala.
+        ArrayList<String> mcNameList = mcTiendaEnSala.get(r.getRoomName());
+
+        //Iteramos por las máquinas para añadirlas a la tienda.
+        for (int i = 0; i < mcNameList.size(); i++)
+        {
+            //Obtenemos las máquinas.
+            final String mcName = mcNameList.get(i);
+            Machine mc = MachineLoader.getInstance().GetMachine(mcName);
+
+            //Obtenemos las texturas de las máquinas.
+            //Empezamos obteniendo la lista de tiles.
+            String tileSetID = mc.getTileSetID();
+            //FIXME: Cambiar el nombre del TileSet por el String.
+            TiledMapTileSet tileSet = game.tsm.GetTileSet("tileSetSotanoMc");
+
+            //Obtenemos la textureRegion específica.
+            TextureRegion tx = tileSet.getTile(mc.getTilePos()).getTextureRegion();
+            TextureRegionDrawable drw = new TextureRegionDrawable(tx);
+
+            //Creamos la imagen.
+            ImageButton bt = new ImageButton(drw);
+
+            bt.addListener(new ChangeListener()
+            {
+                @Override
+                public void changed(ChangeEvent event, Actor actor)
+                {
+                    ComprarMachine(mcName);
+                    //TODO: Debería cerrar las ventanas también.
+                }
+            });
+
+            //Creamos un grupo para la imagen/nombre.
+            VerticalGroup group = new VerticalGroup();
+            group.align(Align.center);
+            group.addActor(bt);
+            group.addActor(new Label(mcName, skin));
+
+            group.validate();
+            group.layout();
+
+            windowTienda.add(group).expandX().expandY();
+
         }
         windowTienda.row();
     }
@@ -294,6 +410,13 @@ public class SalaScreen implements Screen, StageInterface {
             }
         }
 
+    }
+
+
+    public void ComprarMachine(String mcName)
+    {
+        //Dada una máquina, la pondrá en modo espectral y comenzará el procedimiento de compra.
+        Gdx.app.log("SalaScreen", "Se ha comprado la máquina: " + mcName);
     }
 
 

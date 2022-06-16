@@ -379,6 +379,18 @@ public class Room
 
     public boolean isEsOnline() { return esOnline; }
 
+    public int getRoomPrice() { return roomPrice; }
+
+    public HashMap<String, Integer> getRecursosDefecto() { return recursosDefecto; }
+
+    public int getDineroPorCiclo() { return dineroPorCiclo; }
+
+    public int getRoomScore() { return roomScore; }
+
+    public HashMap<String, Integer> getRecursosOcupados() { return recursosOcupados; }
+
+    public HashMap<String, Integer> getRecursosMaximos() { return recursosMaximos; }
+
     /*-------------
      * Variables
      * -------------*/

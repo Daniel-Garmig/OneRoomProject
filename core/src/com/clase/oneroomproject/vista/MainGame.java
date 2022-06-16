@@ -70,12 +70,12 @@ public class MainGame extends Game {
 	public void dispose ()
 	{
 		batch.dispose();
-		cargando.dispose();
-		menu.dispose();
-		online.dispose();
-		mapa.dispose();
-		logging.dispose();
-		salaG.dispose();
+		//cargando.dispose();
+		//menu.dispose();
+		//online.dispose();
+		//mapa.dispose();
+		//logging.dispose();
+		//salaG.dispose();
 	}
 
 	//Getters y Setters
@@ -90,17 +90,19 @@ public class MainGame extends Game {
 		{
 			batch = new SpriteBatch();
 			//Inicialización de las Screen del juego
-			cargando = new CargandoScreen(this);
-			menu = new MainMenuScreen(this);
-			online = new OnlineScreen(this);
-			mapa = new MapaScreen(this);
-			logging = new LoggingScreen(this);
-			salaG = new SalaScreen(this);
+			//cargando = new CargandoScreen(this);
+			//menu = new MainMenuScreen(this);
+			//online = new OnlineScreen(this);
+			//mapa = new MapaScreen(this);
+			//logging = new LoggingScreen(this);
+			//salaG = new SalaScreen(this);
+
+
 			tsm = new TileSetManager();
 
 			LoadGameAssets();
 
-			setScreen(menu);
+			setScreen(new MainMenuScreen(this));
 		} catch (Exception e)
 		{
 			e.printStackTrace();
