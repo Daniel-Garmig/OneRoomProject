@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.clase.oneroomproject.Modelo.GameManager;
 import com.clase.oneroomproject.Modelo.TileSetManager;
+import com.clase.oneroomproject.Modelo.dbConnector;
 
 public class MainGame extends Game {
 	/**
@@ -101,6 +102,8 @@ public class MainGame extends Game {
 			tsm = new TileSetManager();
 
 			LoadGameAssets();
+			//Iniciamos la conexión a la BD.
+			dbConnector.InitDbConnection();
 
 			setScreen(new MainMenuScreen(this));
 		} catch (Exception e)

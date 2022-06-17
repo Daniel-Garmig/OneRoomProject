@@ -145,11 +145,11 @@ public class dbConnector
         Statement stt = CrearStatement();
 
         //Añadimos el nuevo usuario.
-        String query = "INSERT INTO usuarios(nickname,passwd) VALUE (' " + datosUsuario.nickname +
+        String query = "INSERT INTO usuarios(nickname,passwd) VALUES ('" + datosUsuario.nickname +
                 "','" + datosUsuario.password + "');";
         try
         {
-            stt.execute("query");
+            stt.execute(query);
         } catch (SQLException e)
         {
             Gdx.app.error("dbConnector", "No se ha podido añadir el nuevo usuario: " + datosUsuario.nickname);

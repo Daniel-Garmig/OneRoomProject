@@ -135,8 +135,10 @@ public class LoggingScreen implements Screen, StageInterface
             public void changed(ChangeEvent event, Actor actor)
             {
                 //Extraemos los datos de los campos.
-                String nick = txtFieldNick.getText();
-                String pass = txtFieldPasswd.getText();
+                String nick = txtFieldNick.getText().trim();
+                String pass = txtFieldPasswd.getText().trim();
+
+                Gdx.app.log("Logging", "Username: " + nick + "; pass: " + pass);
 
                 //TODO: Habría que hacer un Regex para comprobar los datos.
 
@@ -146,14 +148,18 @@ public class LoggingScreen implements Screen, StageInterface
                     Dialog dgNick = new Dialog("Nick no disponible", skin);
                     dgNick.text("El nick indicado no está disponible. \nElija otro");
                     dgNick.button("Ok");
+                    stage.addActor(dgNick);
                 }
 
                 if(pass.equals(""))
                 {
-                    Dialog dgNick = new Dialog("Contraseña no válida", skin);
-                    dgNick.text("Tiene que indicar una contraseña.");
-                    dgNick.button("Ok");
+                    Dialog dgPass = new Dialog("Contraseña no válida", skin);
+                    dgPass.text("Tiene que indicar una contraseña.");
+                    dgPass.button("Ok");
+                    stage.addActor(dgPass);
                 }
+
+                game.gm.CrearNuevoUsuario(nick, pass);
 
 
 
