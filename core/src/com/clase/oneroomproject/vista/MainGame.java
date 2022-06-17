@@ -103,7 +103,8 @@ public class MainGame extends Game {
 
 			LoadGameAssets();
 			//Iniciamos la conexión a la BD.
-			dbConnector.InitDbConnection();
+			//Ya no es necesario, pues se realizará cuando se necesite.
+			//dbConnector.InitDbConnection();
 
 			setScreen(new MainMenuScreen(this));
 		} catch (Exception e)

@@ -18,6 +18,11 @@ public class dbConnector
     private static Connection connect = null;
     private static dbData datosConexion = null;
 
+    /**
+     * Permite saber si está iniciada la conexión a la DB.
+     */
+    private static boolean isInit = false;
+
     private static int IDPartida = -1;
 
     private static final String localDefaultSavePath = "gameData/";
@@ -74,6 +79,9 @@ public class dbConnector
             Gdx.app.error("dbConnector", "No se ha podido cargar el Driver de MySQL.");
         }
 
+        //Indicamos que se ha cargado la conexión.
+        isInit = true;
+
     }
 
     /**
@@ -115,6 +123,7 @@ public class dbConnector
     }
 
 
+
     /**
      * Permite comprobar si el Nick indicado está disponible en la DB
      * y puede ser utilizado para crear un nuevo usuario.
@@ -123,8 +132,40 @@ public class dbConnector
      */
     public static boolean ComprobarNickDisponible(String nick)
     {
-        //TODO: Hacer consulta y devolver resultado.
-        return true;
+
+        //Creamos el Statement.
+        Statement stt = CrearStatement();
+
+        //Utilizamos el procedimiento de autentificación que tenemos en la BD.
+        //FIXME: Cambiar la consulta cuando la función de la DB esté disponible.
+        String query = "SELECT comprobarNickDisponible('" + nick + "') as disp;";
+        boolean disponible = false;
+        try
+        {
+            ResultSet rs = stt.executeQuery(query);
+            //Obtenemos el resultado de la consulta.
+            if(!rs.next())
+            {
+                Gdx.app.error("dbConnector", "Resultado Vacío. No se puede saber si el nick está disponible: " + nick);
+                return false;
+            }
+            int disp = rs.getInt("disp");
+
+            //0 == false, 1 == true.
+            if(disp == 0) { disponible = false; }
+            if(disp == 1) { disponible = true; }
+
+        } catch (SQLException e)
+        {
+            Gdx.app.error("dbConnector", "No ha podido comprobar si el nick está disponible: " + nick);
+            return false;
+        }
+
+
+
+        //Al terminar, cerramos el Statement.
+        CerrarStatement(stt);
+        return disponible;
     }
 
     /**
@@ -133,6 +174,8 @@ public class dbConnector
      */
     public static void AddNewUser(LoginData datosUsuario)
     {
+        CheckIsInit();
+
         //Comprobamos que tenemos datos.
         if(datosUsuario == null)
         {
@@ -167,10 +210,12 @@ public class dbConnector
      */
     public static boolean AutentificarUsuario(LoginData datosUsuario)
     {
+        CheckIsInit();
+
         //Comprobamos que los datos de usuario son correctos.
         if(datosUsuario == null)
         {
-            Gdx.app.error("dbConnector", "No se puede crear autentificar el usuario. " +
+            Gdx.app.error("dbConnector", "No se puede autentificar el usuario. " +
                     "Los datos de usuario están vacíos.");
             return false;
         }
@@ -180,20 +225,30 @@ public class dbConnector
 
         //Utilizamos el procedimiento de autentificación que tenemos en la BD.
         String query = "SELECT validar('" + datosUsuario.nickname +
-                "','" + datosUsuario.password + "');";
+                "','" + datosUsuario.password + "') as auth;";
         boolean autentificado = false;
         try
         {
-            ResultSet rs = stt.executeQuery("query");
+            ResultSet rs = stt.executeQuery(query);
             //Obtenemos el resultado de la consulta.
-            rs.next();
-            autentificado = rs.getBoolean(0);
+            if(!rs.next())
+            {
+                Gdx.app.error("dbConnector", "Resultado Vacío. Ha fallado el procedimiento de auth del user: " + datosUsuario.nickname);
+                return false;
+            }
+            int auth = rs.getInt("auth");
+
+            //0 == false, 1 == verdadero.
+            if(auth == 0) { autentificado = false; }
+            if(auth == 1) { autentificado = true; }
 
         } catch (SQLException e)
         {
             Gdx.app.error("dbConnector", "No se ha podido autentificar el usuario " + datosUsuario.nickname);
             return false;
         }
+
+
 
         //Al terminar, cerramos el Statement.
         CerrarStatement(stt);
@@ -213,9 +268,6 @@ public class dbConnector
             return IDPartida;
         }
 
-        //Si no tenemos los datos, hacemos la consulta.
-        Statement stt = CrearStatement();
-
         //Obtenemos el ID de partida.
         String username = LoginSystem.GetUserName();
         
@@ -232,6 +284,8 @@ public class dbConnector
      */
     public static int GetIDPartidaFromDB(String username)
     {
+        CheckIsInit();
+
         //En este caso, siempre hemos de hacer la consulta.
         //Creamos el Statement.
         Statement stt = CrearStatement();
@@ -242,7 +296,12 @@ public class dbConnector
         try
         {
             ResultSet set = stt.executeQuery(query);
-            id = set.getInt(0);
+            if(!set.next())
+            {
+                Gdx.app.error("dbConnector", "Resultado Vacío. No existe una partida para user: " + username);
+                return -1;
+            }
+            id = set.getInt("id");
         } catch (SQLException e)
         {
             Gdx.app.error("dbConnector", "No se ha podido obtener el ID de partida.");
@@ -261,6 +320,8 @@ public class dbConnector
      */
     public static void AddNewRoomToDB(String roomName)
     {
+        CheckIsInit();
+
         //Obtenemos los datos necesarios.
         int idPartida = GetIDPartidaFromDB();
         String roomData = RoomLoader.getInstance().GetRoomJSON(roomName);
@@ -300,6 +361,8 @@ public class dbConnector
      */
     public static void AddNewSaveDataToDB(Save datosPartida)
     {
+        CheckIsInit();
+
         //Obtenemos los datos que necesitamos.
         String username = LoginSystem.GetUserName();
         int puntuacionTotal = GameManager.getInstance().GetPuntuacionTotal();
@@ -338,6 +401,8 @@ public class dbConnector
      */
     public static void SaveSaveDataToDB(Save datosPartida, int puntuacionTotal)
     {
+        CheckIsInit();
+
         //Obtenemos los datos que necesitamos.
         String username = LoginSystem.GetUserName();
 
@@ -377,6 +442,8 @@ public class dbConnector
      */
     public static void SaveRoomToDB(String roomName)
     {
+        CheckIsInit();
+
         //Obtenemos los datos necesarios.
         int idPartida = GetIDPartidaFromDB();
         String roomJSON = RoomLoader.getInstance().GetRoomJSON(roomName);
@@ -415,6 +482,8 @@ public class dbConnector
      */
     public static Save GetSaveDataFromDB(String username)
     {
+        CheckIsInit();
+
         int idPartidaUser = GetIDPartidaFromDB(username);
 
         //Creamos el statement.
@@ -429,6 +498,11 @@ public class dbConnector
         try
         {
             ResultSet rs = stt.executeQuery(queryDinero);
+            if(!rs.next())
+            {
+                Gdx.app.error("dbConnector", "Resultado Vacío. No existe partida con ID: " + idPartidaUser);
+                return null;
+            }
             s.dinero = rs.getInt(0);
         } catch (SQLException e)
         {
@@ -468,6 +542,8 @@ public class dbConnector
      */
     public static String GetRoomDataFromDB(String roomName, String username)
     {
+        CheckIsInit();
+
         //Obtenemos los datos necesarios.
         int idPartida = GetIDPartidaFromDB(username);
 
@@ -482,6 +558,11 @@ public class dbConnector
         try
         {
             ResultSet rs = stt.executeQuery(query);
+            if(!rs.next())
+            {
+                Gdx.app.error("dbConnector", "Resultado Vacío. No se ha encontrado la sala de partida: " + idPartida);
+                return null;
+            }
             datosJSON = rs.getString(0);
         } catch (SQLException e)
         {
@@ -502,6 +583,7 @@ public class dbConnector
      */
     private static Statement CrearStatement()
     {
+
         Statement stt = null;
         try
         {
@@ -527,6 +609,19 @@ public class dbConnector
         catch (Exception e)
         {
             System.err.println("No se ha podido cerrar el Statement.");
+        }
+    }
+
+    /**
+     * Verifica si está iniciada la conexión con la BD.
+     * Si no lo está, lo hace.
+     * De esta forma, sólo hacemos la conexión cuando es necesario.
+     */
+    private static void CheckIsInit()
+    {
+        if(!isInit)
+        {
+            InitDbConnection();
         }
     }
 

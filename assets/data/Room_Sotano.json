@@ -5,7 +5,7 @@
 		"y": 5
 	},
 	"RoomPrice": 250,
-	"HuecosDisponibles": 10,
+	"HuecosDisponibles": 45,
 	"CapacidadPorDefecto": {
 		"Abonos": 8,
 		"Refrigeracion": 10,

@@ -4,8 +4,8 @@
 		"machineID": "NULLMC",
 		"attributes": {},
 		"esDeRecursos": false,
-		"machineCost": 5,
-		"dineroProducido": 8,
+		"machineCost": 0,
+		"dineroProducido": 0,
 		"tileSetID": "MCTileSet_Sotano",
 		"tilePos": 0
 	},

@@ -82,6 +82,13 @@ public class Room
      * Methods
      * -------------*/
 
+    /**
+     * Añade una máquina a la sala, realizando todas las comprobaciones pertinentes.
+     * @param x Posición x.
+     * @param y Posición y.
+     * @param machineToAdd Ptr a la máquina que se quiere añadir.
+     * @return true si la máquina se ha añadido correctamente, false si ha ocurrido un error.
+     */
     public boolean AddMachine(int x, int y, Machine machineToAdd)
     {
         if(!ComprobarMaquina(machineToAdd, x, y))
@@ -100,11 +107,10 @@ public class Room
         //Todo: Esto debería ser únicamente en máquinas de dinero o
         // en todas las máquinas. Podemos considerar que si no producen dinero tendrán valor 0 en dineroProducido.
         dineroPorCiclo += machineToAdd.dineroProducido;
+        roomScore += machineToAdd.machineCost;
 
         //Se consume un hueco de espacio en la sala.
         espacioOcupado += 1;
-        roomScore += machineToAdd.machineCost;
-
 
         return true;
     }
@@ -173,6 +179,12 @@ public class Room
      */
     public boolean ComprobarPosicion(int x, int y)
     {
+        //Evitamos salirnos del Array.
+        if(y >= machineData.length || x >= machineData[0].length)
+        {
+            return false;
+        }
+
         Machine mc = machineData[y][x];
         if(mc == null)
         {
@@ -405,7 +417,7 @@ public class Room
     //El dinero que cuesta comprar esta sala. Se almacena en al JSON.
     int roomPrice;
 
-    //Indica el total de máquinas caben en la sala.
+    //Indica el total de celdas que tiene la sala. Se incluyen paredes.
     int espacioTotal;
 
 

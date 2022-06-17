@@ -33,7 +33,7 @@ public class LoginSystem
         //Realizamos la autentificación en la DB.
         if(!dbConnector.AutentificarUsuario(datosUsuario))
         {
-            Gdx.app.error("LoginSystem", "ERROR DE AUTH! Los datos de usuario son incorrectos.");
+            Gdx.app.log("LoginSystem", "ERROR DE AUTH! Los datos de usuario son incorrectos.");
             return false;
         }
 
@@ -79,7 +79,7 @@ public class LoginSystem
     }
 
     /**
-     * Crea un nuevo usuario, lo guarda en un JSON y lo añade a la BD.
+     * Crea un nuevo usuario y lo guarda en un JSON.
      * @param username Nombre de usuario.
      * @param password Contraseña.
      */
@@ -105,14 +105,18 @@ public class LoginSystem
         SaveToJSON();
 
         //Lo añadimos a la DB.
-        dbConnector.AddNewUser(datosUsuario);
 
+    }
+
+    public static void AddNewUserToDB()
+    {
+        dbConnector.AddNewUser(datosUsuario);
     }
 
     /**
      * Carga los datos de usuario desde un JSON de la ubicación por defecto.
      */
-    private static void LoadFromJSON()
+    public static void LoadFromJSON()
     {
         //Comprobamos si el archivo existe.
         if(!ComprobarExisteUsuario())
@@ -132,7 +136,7 @@ public class LoginSystem
     /**
      * Guarda los datos de usuario a un JSON en la ubicación por defecto.
      */
-    private static void SaveToJSON()
+    public static void SaveToJSON()
     {
         //Creamos el JSON y lo generamos.
         Json json = new Json(JsonWriter.OutputType.json);

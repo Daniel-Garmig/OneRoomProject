@@ -128,7 +128,8 @@ public class LoggingScreen implements Screen, StageInterface
     }
 
     @Override
-    public void gestionEventos() {
+    public void gestionEventos()
+    {
         btnAceptar.addListener(new ChangeListener()
         {
             @Override
@@ -143,7 +144,7 @@ public class LoggingScreen implements Screen, StageInterface
                 //TODO: Habría que hacer un Regex para comprobar los datos.
 
                 //Comprobamos si el nick está disponible.
-                if(nick.equals("") || !dbConnector.ComprobarNickDisponible(nick))
+                if(nick.matches("[ a-zA-Z0-9]{0,2}") || !dbConnector.ComprobarNickDisponible(nick))
                 {
                     Dialog dgNick = new Dialog("Nick no disponible", skin);
                     dgNick.text("El nick indicado no está disponible. \nElija otro");
@@ -151,7 +152,7 @@ public class LoggingScreen implements Screen, StageInterface
                     stage.addActor(dgNick);
                 }
 
-                if(pass.equals(""))
+                if(pass.matches("[ a-zA-Z0-9]{0,2}"))
                 {
                     Dialog dgPass = new Dialog("Contraseña no válida", skin);
                     dgPass.text("Tiene que indicar una contraseña.");
@@ -161,10 +162,8 @@ public class LoggingScreen implements Screen, StageInterface
 
                 game.gm.CrearNuevoUsuario(nick, pass);
 
-
-
-                //TODO Después de la comprobación envía la información a la BBDD
-                //TODO Cambia la Screen a pVez
+                //Llevamos a la pantalla de primera vez.
+                game.setScreen(new pVezScreen(game));
             }
         });
 

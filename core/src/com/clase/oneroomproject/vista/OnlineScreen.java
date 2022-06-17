@@ -10,6 +10,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
+//TODO: Si no se tiene un usuario, se muestra un diálogo y se dice que primero tiene que crear una cuenta.
+
 public class OnlineScreen implements Screen, StageInterface {
     private MainGame game;
     private Stage stage;

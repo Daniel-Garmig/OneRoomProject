@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /*
@@ -23,7 +24,7 @@ public class GameManager
 
 
     private final int dineroInicial = 1000;
-    private final String roomInicial = "Sotano";
+    private final String roomInicial = "Room_Sotano";
 
     public MachineLoader mcLoader;
     public RoomLoader rmLoader;
@@ -64,22 +65,23 @@ public class GameManager
     public void CrearNuevoUsuario(String username, String pass)
     {
         LoginSystem.CrearNuevoUsuario(username, pass);
+        LoginSystem.AddNewUserToDB();
     }
 
 
     /**
      * Utilizado para autentificar un usuario.
      */
-    public void AutentificarUsuario()
+    public boolean AutentificarUsuario()
     {
         //Comprobamos que tenemos los datos de usuario.
         if(!ComprobarExisteUsuario())
         {
             Gdx.app.error("GameManager", "No se ha podido autentificar el usuario. " +
                     "Los datos de usuario no existen.");
-            return;
+            return false;
         }
-        LoginSystem.AutentificarUsuario();
+        return LoginSystem.AutentificarUsuario();
     }
 
 
@@ -109,11 +111,14 @@ public class GameManager
         saveData.dinero = dineroInicial;
 
         //Indicamos que tiene la sala inicial.
+        saveData.ownedRooms = new HashMap<>();
         saveData.ownedRooms.put(roomInicial, true);
         //Reiniciamos la sala inicial.
         ReiniciarRoom(roomInicial);
         //Cargamos la sala inicial.
-        rmLoader.LoadRoomFromJSON(Gdx.files.local(localSavePath + roomInicial + ".json"));
+        rmLoader.LoadRoomFromJSON(Gdx.files.local(localSavePath + "Rooms/" + roomInicial + ".json"));
+
+        SaveGameToJSON();
 
         //Creamos la nueva partida en la DB.
         dbConnector.AddNewSaveDataToDB(saveData);
@@ -219,7 +224,7 @@ public class GameManager
     public void ReiniciarRoom(String roomID)
     {
         FileHandle prefab = Gdx.files.internal(internalDataPath + roomID + ".json");
-        FileHandle roomSave = Gdx.files.local(localSavePath + roomID + ".json");
+        FileHandle roomSave = Gdx.files.local(localSavePath + "Rooms/" + roomID + ".json");
         prefab.copyTo(roomSave);
     }
 
@@ -279,7 +284,7 @@ public class GameManager
         }
 
         //Intentamos añadir la máquina.
-        if(rmLoader.GetCurrentRoom().AddMachine(posX, posY, mc))
+        if(!rmLoader.GetCurrentRoom().AddMachine(posX, posY, mc))
         {
             return false;
         }
@@ -338,4 +343,8 @@ public class GameManager
         return total;
     }
 
+    public int GetDinero()
+    {
+        return saveData.dinero;
+    }
 }

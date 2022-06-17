@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.clase.oneroomproject.Modelo.LoginSystem;
 import jdk.internal.misc.TerminatingThreadLocal;
 import org.w3c.dom.Text;
 
@@ -140,13 +141,36 @@ public class MainMenuScreen implements Screen, StageInterface
             @Override
             public void changed(ChangeEvent event, Actor actor)
             {
-                //Si el json de partida no existe entonces cargará por primera vez el juego y creará el json
-                if (!game.gm.ComprobarExistePartida())
+                //Si el json de usuario no existe entonces pedirá al usuario que cree una cuenta.
+                if (!game.gm.ComprobarExisteUsuario())
                 {
                     game.setScreen(new LoggingScreen(game));
+
+                }
+                //Si existe el usuario, pero no la partida, creamos una nueva partida.
+                else if (!game.gm.ComprobarExistePartida())
+                {
+                    //Cargamos el usuario.
+                    LoginSystem.LoadFromJSON();
+                    if(!game.gm.AutentificarUsuario())
+                    {
+                        //TODO: diálogo con el error.
+                    }
+
+                    game.setScreen(new pVezScreen(game));
                 }else
                 {
-                    //Cargamos la partida.
+                    //Cargamos el usuario y autentificamos al usuario.
+                    LoginSystem.LoadFromJSON();
+                    //Si no está logged, inicia sesión.
+                    if(!LoginSystem.IsLogged())
+                    {
+                        if(!game.gm.AutentificarUsuario())
+                        {
+                            //TODO: diálogo con el error.
+                        }
+                    }
+
                     game.gm.LoadGameFromJSON();
                     game.setScreen(new MapaScreen(game));
                 }

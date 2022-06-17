@@ -23,10 +23,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
-import com.clase.oneroomproject.Modelo.Machine;
-import com.clase.oneroomproject.Modelo.MachineLoader;
-import com.clase.oneroomproject.Modelo.Room;
-import com.clase.oneroomproject.Modelo.RoomLoader;
+import com.clase.oneroomproject.Modelo.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -244,30 +241,19 @@ public class SalaScreen implements Screen, StageInterface {
                     return;
                 }
 
-                Vector2 tileNum = ScreenToTileMapCoors(x, y);
+                //Obtengo la posición del ratón.
+                Vector3 mousePos =  camera.unproject(new Vector3(Gdx.input.getX(0), Gdx.input.getY(0), 0));
+                Vector2 mouseTileNum = ScreenToTileMapCoors(mousePos.x, mousePos.y);
 
                 //Comprobamos si estamos en modo compra.
                 if(!modoCompra)
                 {
-                    //Obtenemos la posición dentro del TileMap que corresponde con el ratón.
-                    Gdx.app.log("SalaScreen", "Tile: " + (int)tileNum.x + ", " + (int)tileNum.y);
-
-                    //Se comprobará esa posición para ver si hay una máquina.
-                    // Si la hay, se seleccionará y mostrará la ventana de información.
-                    //  Y se pondrá la máquina con formato "brilli".
+                    SeleccionarMC((int)mouseTileNum.x, (int)mouseTileNum.y);
                 }
                 //Si estamos en modo compra...
                 if(modoCompra)
                 {
-                    //Se comprueba si la posición es correcta.
-                    //Se realiza la compra.
-                    Gdx.app.log("SalaScreen", "Tile: " + (int)tileNum.x + ", " + (int)tileNum.y);
-
-
-                    modoCompra = false;
-                    //Se limpia la capa espectral.
-                    ClearShadowLayer();
-
+                    RealizarCompraMC((int)mouseTileNum.x, (int)mouseTileNum.y);
                 }
 
             }
@@ -419,8 +405,8 @@ public class SalaScreen implements Screen, StageInterface {
     {
         Vector2 tileIndex = new Vector2();
         //Convertimos en función del tamaño de los tiles.
-        tileIndex.x = (float) (Math.floor(x) / (tileSize.x * tileUnitScale));
-        tileIndex.y = (float) (Math.floor(y) / (tileSize.y * tileUnitScale));
+        tileIndex.x = (float) Math.floor(x / (tileSize.x * tileUnitScale));
+        tileIndex.y = (float) Math.floor(y / (tileSize.y * tileUnitScale));
 
         return tileIndex;
     }
@@ -641,7 +627,26 @@ public class SalaScreen implements Screen, StageInterface {
                 @Override
                 public void changed(ChangeEvent event, Actor actor)
                 {
-                    //event.handle();
+
+                    //Realizamos las comprobaciones pertinentes.
+                    //Comprobamos si tiene dinero.
+                    if(game.gm.GetDinero() < mc.getMachineCost())
+                    {
+                        Dialog dg = new Dialog("No tienes dinero", skin);
+                        dg.text("No tienes dinero para comprar esta máquina.");
+                        dg.button("Ok");
+                        mcBuyWindow.addActor(dg);
+                        return;
+                    }
+                    //Comprobamos si la sala tiene recursos para esa máquina.
+                    if(!currentRoom.ComprobarRecursosParaMaquina(mc))
+                    {
+                        Dialog dg = new Dialog("No tienes recursos", skin);
+                        dg.text("No se puede comprar la máquina, \nla sala no tiene recursos suficientes.");
+                        dg.button("Ok");
+                        mcBuyWindow.addActor(dg);
+                        return;
+                    }
 
                     //Cerramos la ventana.
                     mcBuyWindow.remove();
@@ -655,8 +660,6 @@ public class SalaScreen implements Screen, StageInterface {
                     mcEspectral = mc;
                     modoCompra = true;
 
-                    //TODO: Hay que comprobar si se puede realizar la compra (hay dinero, hay recursos, ...) -> métodos de GM.
-                    //  Si no los hay, se muestra un dialog con error.
                 }
             });
 
@@ -693,11 +696,10 @@ public class SalaScreen implements Screen, StageInterface {
         //Obtenemos la tile.
         TiledMapTile mcTile = game.tsm.GetTileSet(mcEspectral.getTileSetID()).getTile(mcEspectral.getTilePos());
 
-        //Comprobamos lo que hay en la tile indicada.
-        Machine mcEnTile = currentRoom.getMachineData()[(int)newTileNum.y][(int)newTileNum.x];
         //Comprobamos si esa posición está ocupada. De ser así, indicamos que no se puede.
-        if(mcEnTile != null)
+        if(!currentRoom.ComprobarPosicion((int)newTileNum.x, (int)newTileNum.y))
         {
+            //Modificamos la tile por la que indica que no se puede poner.
             mcTile = game.tsm.GetTileSet(mcEspectral.getTileSetID()).getTile(1);
         }
 
@@ -723,4 +725,51 @@ public class SalaScreen implements Screen, StageInterface {
     }
 
 
+    /**
+     * Ejecutado cuando se está en modo espectral y se hace click.
+     * De ser posible, compra la máquina indicada.
+     */
+    public void RealizarCompraMC(int tileNumX, int tileNumY)
+    {
+        //Obtenemos la posición del Click
+
+        //Se comprueba si la posición es válida.
+        if(!currentRoom.ComprobarPosicion(tileNumX, tileNumY))
+        {
+            //TODO: Se indicará más visualmente que no se puede colocar ahí.
+            modoCompra = false;
+            ClearShadowLayer();
+            return;
+        }
+
+        //Se realiza la compra.
+        Gdx.app.log("SalaScreen", "Tile: " + tileNumX + ", " + tileNumY);
+
+        //Si no se completa la compra, error.
+        if(!game.gm.ComprarMachine(mcEspectral, tileNumX, tileNumY))
+        {
+            Dialog dg = new Dialog("ERROR", skin);
+            dg.text("No se ha podido comprar la máquina.\nVuelva a intentarlo más tarde");
+            dg.button("Ok");
+            stage.addActor(dg);
+        }
+
+        modoCompra = false;
+        //Se limpia la capa espectral.
+        ClearShadowLayer();
+
+        //Actualizamos el TileMap.
+        UpdateTileMap();
+    }
+
+
+    public void SeleccionarMC(int tileNumX, int tileNumY)
+    {
+        //Obtenemos la posición dentro del TileMap que corresponde con el ratón.
+        Gdx.app.log("SalaScreen", "Tile: " + tileNumX + ", " + tileNumY);
+
+        //Se comprobará esa posición para ver si hay una máquina.
+        // Si la hay, se seleccionará y mostrará la ventana de información.
+        //  Y se pondrá la máquina con formato "brilli".
+    }
 }

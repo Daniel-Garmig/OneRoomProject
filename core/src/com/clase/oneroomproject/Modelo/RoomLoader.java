@@ -375,6 +375,8 @@ public class RoomLoader
                 }
             }
 
+            //room.espacioOcupado = (int)room.roomSize.x * (int)room.roomSize.y;
+
             //TODO: Añadir un método que compruebe que los recursos consumidos no son mayores que los máximos.
             //  En caso de serlo, habrá sido una modificación manual y sería genial que le saltara un mensaje al
             //  jugador diciendo que le hemos pillado.
