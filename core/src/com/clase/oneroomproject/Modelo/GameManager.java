@@ -116,7 +116,7 @@ public class GameManager
         //Reiniciamos la sala inicial.
         ReiniciarRoom(roomInicial);
         //Cargamos la sala inicial.
-        rmLoader.LoadRoomFromJSON(Gdx.files.local(localSavePath + "Rooms/" + roomInicial + ".json"));
+        rmLoader.LoadRoomFromJSON(Gdx.files.local(localRoomSavePath + roomInicial + ".json"));
 
         SaveGameToJSON();
 
@@ -224,7 +224,7 @@ public class GameManager
     public void ReiniciarRoom(String roomID)
     {
         FileHandle prefab = Gdx.files.internal(internalDataPath + roomID + ".json");
-        FileHandle roomSave = Gdx.files.local(localSavePath + "Rooms/" + roomID + ".json");
+        FileHandle roomSave = Gdx.files.local(localRoomSavePath + roomID + ".json");
         prefab.copyTo(roomSave);
     }
 
