@@ -1,9 +1,0 @@
-{
-    "dinero": 1000,
-    "ownedRooms": {
-        "testRoom": false,
-        "invernadero": false,
-        "Room_Sotano": true,
-        "recreativos": false
-    }
-}

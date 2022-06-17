@@ -97,11 +97,12 @@ public class GameManager
      * Realiza todas las acciones necesarias para crear una partida nueva.
      * Crea unos nuevos datos de partida.
      * Reinicia la sala de inicio.
-     * Crea
+     * Crea el archivo save y el de la sala de inicio.
+     * Añade la partida y la sala a la DB.
      */
     public void CrearNuevaPartida()
     {
-        //Nos aseguramos que los datos de partida están límpios.
+        //Nos aseguramos que los datos de partida están limpios.
         saveData = null;
 
         saveData = new Save();

@@ -44,6 +44,8 @@ public class SalaScreen implements Screen, StageInterface {
     private TiledMap map;
     private OrthogonalTiledMapRenderer mapRenderer;
 
+    private Room currentRoom;
+
 
     /*
         UI con cosas.
@@ -77,6 +79,7 @@ public class SalaScreen implements Screen, StageInterface {
         this.game = game;
         batchG = game.getBatch();
         camera = new OrthographicCamera();
+        currentRoom = RoomLoader.getInstance().GetCurrentRoom();
         initComponentes();
         addComponentes();
         putComponentes();
@@ -280,14 +283,13 @@ public class SalaScreen implements Screen, StageInterface {
     public void CreateTileMap()
     {
         RoomLoader rmLoader = game.gm.rmLoader;
-        Room rm = rmLoader.GetCurrentRoom();
         //Creamos el TileMap.
         map = new TiledMap();
         mapRenderer = new OrthogonalTiledMapRenderer(map, tileUnitScale);
 
         //Creamos las layers.
         MapLayers layers = map.getLayers();
-        Vector2 rmSize = rm.getRoomSize();
+        Vector2 rmSize = currentRoom.getRoomSize();
 
         //BG Layer.
         TiledMapTileLayer bgLayer = new TiledMapTileLayer((int)rmSize.x, (int)rmSize.y, (int)tileSize.x, (int)tileSize.y);
@@ -312,17 +314,16 @@ public class SalaScreen implements Screen, StageInterface {
     public void UpdateTileMap()
     {
         //Obtenemos la información pertinente.
-        Room rm = game.gm.rmLoader.GetCurrentRoom();
 
-        Vector2 rmSize = rm.getRoomSize();
-        int[][] roomBgData = rm.getBgData();
+        Vector2 rmSize = currentRoom.getRoomSize();
+        int[][] roomBgData = currentRoom.getBgData();
 
         MapLayers layers = map.getLayers();
 
         //Actualizamos las tiles del Background.
         TiledMapTileLayer bgLayer = (TiledMapTileLayer) layers.get("bgLayer");
 
-        TiledMapTileSet bgTileSet = game.tsm.GetTileSet(rm.getTileSetID());
+        TiledMapTileSet bgTileSet = game.tsm.GetTileSet(currentRoom.getTileSetID());
         for(int y = 0; y < rmSize.y; y++)
         {
             for(int x = 0; x < rmSize.x; x++)
@@ -338,7 +339,7 @@ public class SalaScreen implements Screen, StageInterface {
         TiledMapTileLayer mcLayer = (TiledMapTileLayer) layers.get("mcLayer");
 
         //Obtenemos la lista de máquinas.
-        Machine[][] mcData = rm.getMachineData();
+        Machine[][] mcData = currentRoom.getMachineData();
 
         for(int y = 0; y < rmSize.y; y++)
         {
@@ -439,9 +440,8 @@ public class SalaScreen implements Screen, StageInterface {
 
 
         //Mostramos las estadísticas de la sala.
-        Room r = RoomLoader.getInstance().GetCurrentRoom();
         //Guardamos el nombre de los recursos.
-        Set<String> nombresRecursos = r.getRecursosOcupados().keySet();
+        Set<String> nombresRecursos = currentRoom.getRecursosOcupados().keySet();
 
         //Mostramos la información para cada uno de los recursos.
         VerticalGroup group = new VerticalGroup();
@@ -451,13 +451,13 @@ public class SalaScreen implements Screen, StageInterface {
         group.moveBy(45, -45);
         windowStats.addActor(group);
 
-        Label roomName = new Label(r.getRoomName(), skin);
+        Label roomName = new Label(currentRoom.getRoomName(), skin);
         roomName.setFontScale(1.2f);
         group.addActor(roomName);
-        group.addActor(new Label("Puntuacion: " + r.getRoomScore(), skin));
-        group.addActor(new Label("Dinero por ciclo: " + r.getDineroPorCiclo(), skin));
+        group.addActor(new Label("Puntuacion: " + currentRoom.getRoomScore(), skin));
+        group.addActor(new Label("Dinero por ciclo: " + currentRoom.getDineroPorCiclo(), skin));
 
-        group.addActor(new Label("Precio de compra: " + r.getRoomPrice(), skin));
+        group.addActor(new Label("Precio de compra: " + currentRoom.getRoomPrice(), skin));
 
         group.addActor(new Label("Recursos de la sala: ", skin));
 
@@ -530,10 +530,9 @@ public class SalaScreen implements Screen, StageInterface {
      */
     private void AddMcToTienda()
     {
-        Room r = RoomLoader.getInstance().GetCurrentRoom();
 
         //Obtenemos la lista con los nombres de las máquinas que puede haber en esa sala.
-        ArrayList<String> mcNameList = mcTiendaEnSala.get(r.getRoomName());
+        ArrayList<String> mcNameList = mcTiendaEnSala.get(currentRoom.getRoomName());
 
         //Iteramos por las máquinas para añadirlas a la tienda.
         for (int i = 0; i < mcNameList.size(); i++)
@@ -693,7 +692,14 @@ public class SalaScreen implements Screen, StageInterface {
         TiledMapTileLayer shadowLayer = (TiledMapTileLayer) map.getLayers().get("shadowLayer");
         //Obtenemos la tile.
         TiledMapTile mcTile = game.tsm.GetTileSet(mcEspectral.getTileSetID()).getTile(mcEspectral.getTilePos());
-        //FIXME: Al cambiar de Tile hay que comprobar si la nueva tile está ocupada. De ser así se pondrá la TilePos = 1 en vez de la mc.
+
+        //Comprobamos lo que hay en la tile indicada.
+        Machine mcEnTile = currentRoom.getMachineData()[(int)newTileNum.y][(int)newTileNum.x];
+        //Comprobamos si esa posición está ocupada. De ser así, indicamos que no se puede.
+        if(mcEnTile != null)
+        {
+            mcTile = game.tsm.GetTileSet(mcEspectral.getTileSetID()).getTile(1);
+        }
 
 
         TiledMapTile clearTile = game.tsm.GetTileSet(mcEspectral.getTileSetID()).getTile(0);

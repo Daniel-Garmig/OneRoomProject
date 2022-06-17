@@ -5,14 +5,15 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.clase.oneroomproject.Modelo.dbConnector;
 
-public class LoggingScreen implements Screen, StageInterface{
+public class LoggingScreen implements Screen, StageInterface
+{
 
     private MainGame game;
     private Stage stage;
@@ -24,9 +25,12 @@ public class LoggingScreen implements Screen, StageInterface{
     private OrthographicCamera camera;
     private TextButton btnAceptar;
     private TextButton btnCancelar;
-    public LoggingScreen(MainGame game) {
+    public LoggingScreen(MainGame game)
+    {
         this.game = game;
         camera= new OrthographicCamera();
+        skin = game.skin;
+
         initComponentes();
         addComponentes();
         putComponentes();
@@ -34,13 +38,15 @@ public class LoggingScreen implements Screen, StageInterface{
     }
 
     @Override
-    public void show() {
+    public void show()
+    {
         camera.setToOrtho(false, 0, 0);
         Gdx.input.setInputProcessor(stage);
     }
 
     @Override
-    public void render(float delta) {
+    public void render(float delta)
+    {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         camera.update();
         stage.draw();
@@ -69,8 +75,24 @@ public class LoggingScreen implements Screen, StageInterface{
     public void initComponentes()
     {
         stage = new Stage();
+
+        ClickListener textFieldClick = new ClickListener()
+        {
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+                super.clicked(event, x, y);
+                TextField f = (TextField) event.getListenerActor();
+                f.setText("");
+            }
+        };
+
         txtFieldNick = new TextField("Escribe tu nick", skin);
+        txtFieldNick.addListener(textFieldClick);
+
         txtFieldPasswd = new TextField("Escribe tu contraseña", skin);
+        txtFieldPasswd.addListener(textFieldClick);
+
         lbNick = new Label("Nick: ", skin);
         lbPasswd = new Label("Password:", skin);
         btnAceptar = new TextButton("Aceptar", skin);
@@ -78,7 +100,8 @@ public class LoggingScreen implements Screen, StageInterface{
     }
 
     @Override
-    public void addComponentes() {
+    public void addComponentes()
+    {
         stage.addActor(txtFieldNick);
         stage.addActor(txtFieldPasswd);
         stage.addActor(lbNick);
@@ -88,7 +111,8 @@ public class LoggingScreen implements Screen, StageInterface{
     }
 
     @Override
-    public void putComponentes() {
+    public void putComponentes()
+    {
         lbNick.setSize(100f, 30f);
         lbPasswd.setSize(100f, 30f);
         txtFieldNick.setSize(200f, 30f);
@@ -105,19 +129,49 @@ public class LoggingScreen implements Screen, StageInterface{
 
     @Override
     public void gestionEventos() {
-        btnAceptar.addListener(new ChangeListener() {
+        btnAceptar.addListener(new ChangeListener()
+        {
             @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                //TODO Comprobar si existe un usuario con ese mismo nick
+            public void changed(ChangeEvent event, Actor actor)
+            {
+                //Extraemos los datos de los campos.
+                String nick = txtFieldNick.getText();
+                String pass = txtFieldPasswd.getText();
+
+                //TODO: Habría que hacer un Regex para comprobar los datos.
+
+                //Comprobamos si el nick está disponible.
+                if(nick.equals("") || !dbConnector.ComprobarNickDisponible(nick))
+                {
+                    Dialog dgNick = new Dialog("Nick no disponible", skin);
+                    dgNick.text("El nick indicado no está disponible. \nElija otro");
+                    dgNick.button("Ok");
+                }
+
+                if(pass.equals(""))
+                {
+                    Dialog dgNick = new Dialog("Contraseña no válida", skin);
+                    dgNick.text("Tiene que indicar una contraseña.");
+                    dgNick.button("Ok");
+                }
+
+
+
                 //TODO Después de la comprobación envía la información a la BBDD
                 //TODO Cambia la Screen a pVez
             }
         });
-        btnCancelar.addListener(new ChangeListener() {
+
+        //Vuelve al menu.
+        btnCancelar.addListener(new ChangeListener()
+        {
             @Override
-            public void changed(ChangeEvent event, Actor actor) {
+            public void changed(ChangeEvent event, Actor actor)
+            {
                 txtFieldNick.setText("Escribe tu nick");
                 txtFieldPasswd.setText("Escribe tu contrasena");
+                game.setScreen(new MainMenuScreen(game));
+                //FIXME: Se debería de eliminar la Screen en el SceneManager.
             }
         });
     }

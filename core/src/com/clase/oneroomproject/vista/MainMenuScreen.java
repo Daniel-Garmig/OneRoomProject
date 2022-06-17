@@ -143,7 +143,7 @@ public class MainMenuScreen implements Screen, StageInterface
                 //Si el json de partida no existe entonces cargará por primera vez el juego y creará el json
                 if (!game.gm.ComprobarExistePartida())
                 {
-                    game.setScreen(new pVezScreen(game));
+                    game.setScreen(new LoggingScreen(game));
                 }else
                 {
                     //Cargamos la partida.

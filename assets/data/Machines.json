@@ -20,7 +20,7 @@
 		"machineCost": 5,
 		"dineroProducido": 8,
 		"tileSetID": "MCTileSet_Sotano",
-		"tilePos": 3
+		"tilePos": 2
 	},
 	{
 		"class": "com.clase.oneroomproject.Modelo.Machine",
@@ -33,7 +33,7 @@
 		"machineCost": 10,
 		"dineroProducido": 15,
 		"tileSetID": "MCTileSet_Sotano",
-		"tilePos": 5
+		"tilePos": 4
 	},
 	{
 		"class": "com.clase.oneroomproject.Modelo.Machine",
@@ -46,7 +46,7 @@
 		"machineCost": 15,
 		"dineroProducido": 30,
 		"tileSetID": "MCTileSet_Sotano",
-		"tilePos": 7
+		"tilePos": 6
 	},
 	{
 		"class": "com.clase.oneroomproject.Modelo.Machine",
@@ -59,6 +59,6 @@
 		"machineCost": 2,
 		"dineroProducido": 1,
 		"tileSetID": "MCTileSet_Sotano",
-		"tilePos": 9
+		"tilePos": 8
 	}
 ]
