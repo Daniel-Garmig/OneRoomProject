@@ -115,8 +115,8 @@ public class MainGame extends Game {
 	private void LoadGameAssets()
 	{
 		skin = new Skin(Gdx.files.internal("pruebaSkin/uiskin.json"));
-		tsm.loadTileSet("PruebasAssets/tiles.png", "tileSetSotanoBg", 128, 128);
-		tsm.loadTileSet("PruebasAssets/PruebaMap.png", "tileSetSotanoMc", 8,8);
-		gm.mcLoader.LoadFromJSON(Gdx.files.internal("data/testMachines.json"));
+		tsm.loadTileSet("Assets/MCTileSet_Sotano.png", "MCTileSet_Sotano", 64, 64);
+		tsm.loadTileSet("Assets/SotanoTileSet.png", "BGTileSet_Sotano", 64,64);
+		gm.mcLoader.LoadFromJSON(Gdx.files.internal("data/Machines.json"));
 	}
 }

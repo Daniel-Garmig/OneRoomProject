@@ -107,9 +107,9 @@ public class MapaScreen implements Screen, StageInterface {
             public void changed(ChangeEvent event, Actor actor)
             {
                 //Comprobamos si tiene comprada la sala.
-                if (game.gm.saveData.ownedRooms.get("testRoom"))
+                if (game.gm.saveData.ownedRooms.get("Room_Sotano"))
                 {
-                    game.gm.rmLoader.SetCurrentRoom("testRoom");
+                    game.gm.rmLoader.SetCurrentRoom("Room_Sotano");
                     game.setScreen(new SalaScreen(game));
                 }else
                 {
