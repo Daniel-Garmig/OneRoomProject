@@ -1,6 +1,7 @@
 package com.clase.oneroomproject.vista;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -17,6 +18,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -49,11 +51,16 @@ public class SalaScreen implements Screen, StageInterface {
      */
     private TextButton btnStats;
     private TextButton btnTienda;
+    private TextButton btnCompletarCiclo;
+    private HorizontalGroup barraGroup;
+    private Label lbDinero;
+    private Label lbDineroPorCiclo;
     /**
      * Window con las estadísticas
      */
     private Window windowStats;
     private Window windowTienda;
+    private Window windowEscape;
 
     private HashMap<String, ArrayList<String>> mcTiendaEnSala;
 
@@ -70,6 +77,9 @@ public class SalaScreen implements Screen, StageInterface {
     //Almacenará la MC mientras está en periodo de compra / espectral.
     private Machine mcEspectral;
     private Vector2 tileNum;
+
+    private boolean saved = false;
+    private boolean pausado = false;
 
     public SalaScreen(MainGame game)
     {
@@ -133,6 +143,9 @@ public class SalaScreen implements Screen, StageInterface {
             RenderModoEspectral();
         }
 
+        //Actualizamos los valores de los botones.
+        lbDinero.setText("Dinero: " + game.gm.GetDinero());
+        lbDineroPorCiclo.setText("Dinero/ciclo: " + currentRoom.getDineroPorCiclo());
     }
 
     @Override
@@ -159,22 +172,29 @@ public class SalaScreen implements Screen, StageInterface {
         skin= game.skin;
         stage = new Stage();
 
+        barraGroup = new HorizontalGroup();
+
         btnStats = new TextButton("Estadisticas", skin);
         windowStats = new Window("Estadisticas", skin);
+
         btnTienda = new TextButton("Tienda", skin);
         windowTienda = new Window("Tienda", skin);
+
+        lbDinero = new Label("Dinero: " + game.gm.GetDinero(), skin);
+        lbDineroPorCiclo = new Label("Dinero/ciclo: " + currentRoom.getDineroPorCiclo(), skin);
+
+        btnCompletarCiclo = new TextButton("Completar Ciclo", skin);
+
+        windowEscape = new Window("", skin);
     }
 
     @Override
-    public void addComponentes()
+    public void addComponentes() {}
+
+    @Override
+    public void putComponentes()
     {
-        //stage.addActor(btnStats);
-        //stage.addActor(btnTienda);
-    }
-
-    @Override
-    public void putComponentes() {
-
+        //Indicamos el tamaño de las cosas.
         btnStats.setSize(100f,20f);
         btnTienda.setSize(100f, 20f);
         windowStats.setSize(800f, 400f);
@@ -183,29 +203,36 @@ public class SalaScreen implements Screen, StageInterface {
         windowStats.setResizable(true);
         windowTienda.setResizable(true);
 
-        HorizontalGroup hGroup = new HorizontalGroup();
-        stage.addActor(hGroup);
+        //Añadimos y configuramos las cosas de la barra superior.
+        stage.addActor(barraGroup);
 
-        hGroup.align(Align.topRight);
+        barraGroup.align(Align.topRight);
 
-        hGroup.setWidth(Gdx.graphics.getWidth());
-        hGroup.setHeight(Gdx.graphics.getHeight());
+        barraGroup.setWidth(Gdx.graphics.getWidth());
+        barraGroup.setHeight(Gdx.graphics.getHeight());
 
         //Añadimos los componentes Correspondientes.
 
-        hGroup.addActor(btnStats);
-        hGroup.addActor(btnTienda);
+        barraGroup.addActor(btnStats);
+        barraGroup.addActor(btnTienda);
 
-        hGroup.padRight(80);
-        hGroup.padTop(10);
-        hGroup.space(25);
+        barraGroup.addActor(lbDinero);
+        barraGroup.addActor(lbDineroPorCiclo);
 
-        hGroup.layout();
+        barraGroup.padRight(80);
+        barraGroup.padTop(10);
+        barraGroup.space(25);
+
+        barraGroup.layout();
 
         //btnStats.setPosition(800f,((float) Gdx.graphics.getHeight())-btnStats.getHeight()-12f);
         //btnTienda.setPosition(btnStats.getX()+btnStats.getWidth()+15f,btnStats.getY());
         windowStats.setPosition(((float) Gdx.graphics.getWidth()/2f)-(windowStats.getWidth()/2f), ((float) Gdx.graphics.getHeight()/2f)-(windowStats.getHeight()/2f));
         windowTienda.setPosition(windowStats.getX(), windowStats.getY());
+
+        //Creamos la ventana de ESC.
+        windowEscape.setMovable(false);
+        windowEscape.setResizable(false);
     }
 
     @Override
@@ -236,7 +263,7 @@ public class SalaScreen implements Screen, StageInterface {
             {
                 super.clicked(event, x, y);
 
-                if(event.isHandled())
+                if(event.isHandled() || pausado)
                 {
                     return;
                 }
@@ -259,6 +286,52 @@ public class SalaScreen implements Screen, StageInterface {
             }
         });
 
+        /**
+         * Gestionamos la pulsación de la tecla ESC.
+         * Si estamos en modo compra, cancelamos la compra.
+         * Si no, mostramos la pantalla de escape.
+         */
+        stage.addListener(new InputListener()
+        {
+            @Override
+            public boolean keyDown(InputEvent event, int keycode)
+            {
+                //Si no es el ESC, no nos interesa procesarlo.
+                if(keycode != Input.Keys.ESCAPE)
+                {
+                    return super.keyDown(event, keycode);
+                }
+
+                if(!modoCompra)
+                {
+                    if(!pausado)
+                    {
+                        MostrarVentanaEscape();
+                    }else
+                    {
+                        //No podemos estar seguros una vez continúa jugando tras continuar.
+                        saved = false;
+                        pausado = false;
+
+                        windowEscape.remove();
+                        windowEscape.clearChildren();
+                    }
+                }
+
+                if(modoCompra)
+                {
+                    modoCompra = false;
+                    //Se limpia la capa espectral.
+                    ClearShadowLayer();
+
+                    //Actualizamos el TileMap.
+                    UpdateTileMap();
+                }
+
+
+                return true;
+            }
+        });
         //TODO Me gustaría utilizar el ESC para cancelar la compra de una máquina.
     }
 
@@ -567,6 +640,123 @@ public class SalaScreen implements Screen, StageInterface {
         windowTienda.row();
     }
 
+
+    /**
+     * Crea y muestra la ventana del menú de ESC.
+     */
+    private void MostrarVentanaEscape()
+    {
+        pausado = true;
+
+        //Creamos un verticalGroup.
+        VerticalGroup vgroup = new VerticalGroup();
+        vgroup.align(Align.center);
+        vgroup.pad(5);
+        vgroup.space(8);
+
+        //Añadimos sus botones.
+        TextButton btContinuar = new TextButton("Continuar", skin);
+        TextButton btGuardarPartida = new TextButton("Guardar", skin);
+        TextButton btSubir = new TextButton("Subir a la nube", skin);
+        TextButton btVolver = new TextButton("Volver al mapa", skin);
+        TextButton btSalir = new TextButton("Salir sin guardar", skin);
+
+        btContinuar.setSize(150f, 30f);
+        btGuardarPartida.setSize(150f, 30f);
+        btSubir.setSize(150f, 30f);
+        btVolver.setSize(150f, 30f);
+        btSalir.setSize(150f, 30f);
+
+        vgroup.addActor(btContinuar);
+        vgroup.addActor(btGuardarPartida);
+        vgroup.addActor(btSubir);
+        vgroup.addActor(btVolver);
+        vgroup.addActor(btSalir);
+
+        windowEscape.add(vgroup).expandX().expandY();
+        windowEscape.align(Align.center);
+        windowEscape.pack();
+
+        windowEscape.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        //windowEscape.setPosition(((float) Gdx.graphics.getWidth()/2f)-(windowEscape.getWidth()/2f), ((float) Gdx.graphics.getHeight()/2f)-(windowEscape.getHeight()/2f));
+
+        //Si la sala es online, desactivamos algunas opciones.
+        if(currentRoom.isEsOnline())
+        {
+            btGuardarPartida.setDisabled(true);
+            btSubir.setDisabled(true);
+            saved = true;
+        }
+
+        stage.addActor(windowEscape);
+
+
+
+        //Cerramos la ventana de escape.
+        btContinuar.addListener(new ChangeListener()
+        {
+            @Override
+            public void changed(ChangeEvent event, Actor actor)
+            {
+                //No podemos estar seguros una vez continúa jugando.
+                saved = false;
+                pausado = false;
+
+                windowEscape.remove();
+                windowEscape.clearChildren();
+            }
+        });
+
+        //Guarda la partida en local.
+        btGuardarPartida.addListener(new ChangeListener()
+        {
+            @Override
+            public void changed(ChangeEvent event, Actor actor)
+            {
+                game.gm.SaveGameToJSON();
+                saved = true;
+                CreateDialog("Guardado", "La partida se ha guardado correctamente", "Perfecto!");
+            }
+        });
+
+        btSubir.addListener(new ChangeListener()
+        {
+            @Override
+            public void changed(ChangeEvent event, Actor actor)
+            {
+                game.gm.SaveGameToDB();
+                CreateDialog("Subido", "La partida se ha subido al servidor.", "Gracias.");
+            }
+        });
+
+        //Volvemos al mapa.
+        btVolver.addListener(new ChangeListener()
+        {
+            @Override
+            public void changed(ChangeEvent event, Actor actor)
+            {
+                if(!saved && !currentRoom.isEsOnline())
+                {
+                    CreateDialog("Partida no guardada", "Guarde la partida antes de salir", "Ok");
+                    return;
+                }
+
+                game.setScreen(new MapaScreen(game));
+            }
+        });
+
+        //Volvemos al mapa.
+        btSalir.addListener(new ChangeListener()
+        {
+            @Override
+            public void changed(ChangeEvent event, Actor actor)
+            {
+                game.setScreen(new MainMenuScreen(game));
+            }
+        });
+
+    }
+
     /**
      * Crea la ventana con los datos de la máquina seleccionada y el botón para comprar.
      * @param mcName Nombre de la máquina.
@@ -769,8 +959,15 @@ public class SalaScreen implements Screen, StageInterface {
             return;
         }
 
+        Machine[][] mcData = currentRoom.getMachineData();
+
+        if(tileNumY >= mcData.length || tileNumX >= mcData[0].length)
+        {
+            return;
+        }
+
         //Obtenemos la MC en esta posición.
-        final Machine mc = currentRoom.getMachineData()[tileNumY][tileNumX];
+        final Machine mc = mcData[tileNumY][tileNumX];
 
         //Comprobamos si es una NULLMC, pues no se puede seleccionar.
         if(mc.getMachineID().equals("NULLMC"))

@@ -86,7 +86,7 @@ public class RoomLoader
     {
         for(Room r : loadedRooms.values())
         {
-            FileHandle file = Gdx.files.local("save/" + r.roomName + ".json");
+            FileHandle file = Gdx.files.local("gameData/Rooms/" + r.roomName + ".json");
             SaveRoomToJSON(r.roomName, file);
         }
     }

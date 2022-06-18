@@ -137,7 +137,6 @@ public class dbConnector
         Statement stt = CrearStatement();
 
         //Utilizamos el procedimiento de autentificación que tenemos en la BD.
-        //FIXME: Cambiar la consulta cuando la función de la DB esté disponible.
         String query = "SELECT comprobarNickDisponible('" + nick + "') as disp;";
         boolean disponible = false;
         try
@@ -418,9 +417,9 @@ public class dbConnector
         Statement stt = CrearStatement();
 
         //Actualizamos los datos de la partida.
-        String query = "UPDATE partida SET " +
+        String query = "UPDATE partidas SET " +
                 "dinero=" + datosPartida.dinero + "," +
-                "puntuacion=" + puntuacionTotal + "," +
+                "puntuacion=" + puntuacionTotal + " " +
                 "where nickname_usuario='" + username + "';";
         try
         {
