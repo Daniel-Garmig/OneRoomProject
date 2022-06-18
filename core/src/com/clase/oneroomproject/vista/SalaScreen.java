@@ -94,6 +94,8 @@ public class SalaScreen implements Screen, StageInterface {
 
         mcTiendaEnSala = new HashMap<>();
         //FIXME: Automatizar por cada sala
+        //  JA! No pienso serializarlo a otro JSON. GLHF. Hazlo a mano.
+        //      - Daniel
         ArrayList<String> mcSotano = new ArrayList<>();
         mcSotano.add("Sotano_Raspi");
         mcSotano.add("Sotano_Mineria");
@@ -101,6 +103,14 @@ public class SalaScreen implements Screen, StageInterface {
         mcSotano.add("Sotano_PC");
 
         mcTiendaEnSala.put("Room_Sotano", mcSotano);
+
+        ArrayList<String> mcInverna = new ArrayList<>();
+        mcInverna.add("Sotano_Raspi");
+        mcInverna.add("Sotano_Mineria");
+        mcInverna.add("Sotano_Rack");
+        mcInverna.add("Sotano_PC");
+
+        mcTiendaEnSala.put("Room_Invernadero", mcInverna);
 
         tileSize = new Vector2(64, 64);
         tileMapPositionOffset = new Vector2(-46, -41);
@@ -600,6 +610,12 @@ public class SalaScreen implements Screen, StageInterface {
         //Iteramos por las máquinas para añadirlas a la tienda.
         for (int i = 0; i < mcNameList.size(); i++)
         {
+            //Cada 4 máquinas, añadimos una nueva línea en la tienda.
+            if(i % 4 == 0)
+            {
+                windowTienda.row();
+            }
+
             //Obtenemos las máquinas.
             final String mcName = mcNameList.get(i);
             Machine mc = MachineLoader.getInstance().GetMachine(mcName);
@@ -631,8 +647,7 @@ public class SalaScreen implements Screen, StageInterface {
             group.addActor(new Label(mcName, skin));
             group.addActor(new Label(mc.getMachineCost() + "$", skin));
 
-            group.validate();
-            group.layout();
+            group.pack();
 
             windowTienda.add(group).expandX().expandY();
 

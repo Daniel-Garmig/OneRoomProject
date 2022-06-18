@@ -112,7 +112,8 @@ public class GameManager
 
         //Indicamos que tiene la sala inicial.
         saveData.ownedRooms = new HashMap<>();
-        saveData.ownedRooms.put(roomInicial, true);
+        saveData.ownedRooms.put("Room_Sotano", true);
+        saveData.ownedRooms.put("Room_Invernadero", false);
         //Reiniciamos la sala inicial.
         ReiniciarRoom(roomInicial);
         //Cargamos la sala inicial.

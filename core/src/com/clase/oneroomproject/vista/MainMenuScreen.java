@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -174,7 +175,10 @@ public class MainMenuScreen implements Screen, StageInterface
                     LoginSystem.LoadFromJSON();
                     if(!game.gm.AutentificarUsuario())
                     {
-                        //TODO: diálogo con el error.
+                        CreateDialog("Error de Autenticación",
+                                     "Los datos de inicio de sesión no son válidos.",
+                                     "Siendo haber intentado hackearlo ;(");
+                        return;
                     }
 
                     game.setScreen(new pVezScreen(game));
@@ -187,7 +191,10 @@ public class MainMenuScreen implements Screen, StageInterface
                     {
                         if(!game.gm.AutentificarUsuario())
                         {
-                            //TODO: diálogo con el error.
+                            CreateDialog("Error de Autenticación",
+                                         "Los datos de inicio de sesión no son válidos.",
+                                         "Siendo haber intentado hackearlo ;(");
+                            return;
                         }
                     }
 
@@ -202,8 +209,32 @@ public class MainMenuScreen implements Screen, StageInterface
             @Override
             public void changed(ChangeEvent event, Actor actor)
             {
+                //Cargamos el usuario.
+                LoginSystem.LoadFromJSON();
+                if(!game.gm.AutentificarUsuario())
+                {
+                    CreateDialog("Error de Autenticación",
+                                 "Los datos de inicio de sesión no son válidos.",
+                                 "Siendo haber intentado hackearlo ;(");
+                    return;
+                }
+
                 game.setScreen(new OnlineScreen(game));
             }
         });
+    }
+
+    public void CreateDialog(String title, String text, String textButton)
+    {
+        Dialog dg = new Dialog(title, skin);
+        dg.text(text);
+        dg.button(textButton);
+        //dg.layout();
+        //dg.validate();
+        dg.align(Align.center);
+        dg.pack();
+        dg.setPosition(((float)Gdx.graphics.getWidth()/2) - (dg.getWidth()/2),
+                       ((float)Gdx.graphics.getHeight()/2) - (dg.getHeight()/2));
+        stage.addActor(dg);
     }
 }
