@@ -4,18 +4,23 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Align;
 import com.clase.oneroomproject.Modelo.dbConnector;
 
 public class LoggingScreen implements Screen, StageInterface
 {
 
     private MainGame game;
+    private SpriteBatch batchG;
+    private Texture fondo;
     private Stage stage;
     private Label lbNick;
     private Label lbPasswd;
@@ -25,11 +30,14 @@ public class LoggingScreen implements Screen, StageInterface
     private OrthographicCamera camera;
     private TextButton btnAceptar;
     private TextButton btnCancelar;
+    private VerticalGroup vGroup;
+
     public LoggingScreen(MainGame game)
     {
         this.game = game;
+        batchG = game.getBatch();
         camera= new OrthographicCamera();
-        skin = game.skin;
+        fondo = new Texture("Assets/fondoMenu.png");
 
         initComponentes();
         addComponentes();
@@ -49,6 +57,9 @@ public class LoggingScreen implements Screen, StageInterface
     {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         camera.update();
+        batchG.begin();
+        batchG.draw(fondo, 0, 0);
+        batchG.end();
         stage.draw();
         stage.act(Gdx.graphics.getDeltaTime());
     }
@@ -74,8 +85,8 @@ public class LoggingScreen implements Screen, StageInterface
     @Override
     public void initComponentes()
     {
+        skin = game.skin;
         stage = new Stage();
-
         ClickListener textFieldClick = new ClickListener()
         {
             @Override
@@ -86,7 +97,7 @@ public class LoggingScreen implements Screen, StageInterface
                 f.setText("");
             }
         };
-
+        vGroup = new VerticalGroup();
         txtFieldNick = new TextField("Escribe tu nick", skin);
         txtFieldNick.addListener(textFieldClick);
 
@@ -102,12 +113,7 @@ public class LoggingScreen implements Screen, StageInterface
     @Override
     public void addComponentes()
     {
-        stage.addActor(txtFieldNick);
-        stage.addActor(txtFieldPasswd);
-        stage.addActor(lbNick);
-        stage.addActor(lbPasswd);
-        stage.addActor(btnAceptar);
-        stage.addActor(btnCancelar);
+        stage.addActor(vGroup);
     }
 
     @Override
@@ -119,12 +125,45 @@ public class LoggingScreen implements Screen, StageInterface
         txtFieldPasswd.setSize(200f, 30f);
         btnAceptar.setSize(150f, 30f);
         btnCancelar.setSize(150f, 30f);
-        lbNick.setPosition(230f-lbNick.getWidth(), 600f);
-        lbPasswd.setPosition(230f-lbPasswd.getWidth(), lbNick.getY()-60f);
-        txtFieldNick.setPosition(lbPasswd.getX()+(txtFieldNick.getWidth()/2f), lbNick.getY());
-        txtFieldPasswd.setPosition(lbPasswd.getX()+(txtFieldPasswd.getWidth()/2f), lbPasswd.getY());
-        btnAceptar.setPosition(lbPasswd.getX(), lbPasswd.getY()-60f);
-        btnCancelar.setPosition(txtFieldPasswd.getRight()-btnCancelar.getWidth(), btnAceptar.getY());
+
+        vGroup.align(Align.center);
+
+        vGroup.setWidth(Gdx.graphics.getWidth());
+        vGroup.setHeight(Gdx.graphics.getHeight());
+        vGroup.space(60f);
+
+
+        HorizontalGroup hGroupNick= new HorizontalGroup();
+        HorizontalGroup hGroupPasswd= new HorizontalGroup();
+        HorizontalGroup hGroupBotones= new HorizontalGroup();
+
+        hGroupNick.align(Align.left);
+        hGroupPasswd.align(Align.left);
+        hGroupBotones.align(Align.left);
+
+        //FIXME: CONTROLAR ESPACIOS
+        float widthHGroup =100f;
+        hGroupNick.setWidth(widthHGroup);
+        hGroupPasswd.setWidth(widthHGroup);
+        hGroupBotones.setWidth(widthHGroup);
+
+        hGroupNick.addActor(lbNick);
+        hGroupNick.addActor(txtFieldNick);
+
+        hGroupPasswd.addActor(lbPasswd);
+        hGroupPasswd.addActor(txtFieldPasswd);
+
+        hGroupBotones.addActor(btnAceptar);
+        hGroupBotones.addActor(btnCancelar);
+
+        vGroup.addActor(hGroupNick);
+        vGroup.addActor(hGroupPasswd);
+        vGroup.addActor(hGroupBotones);
+
+
+        //FIXME: CONTROLAR ESPACIOS(QUITAR ESTA LINEA)
+        vGroup.setDebug(true, true);
+
     }
 
     @Override

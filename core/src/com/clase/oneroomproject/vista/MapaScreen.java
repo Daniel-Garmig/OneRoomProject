@@ -6,12 +6,15 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.clase.oneroomproject.Modelo.SaveLoader;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 public class MapaScreen implements Screen, StageInterface {
 
@@ -21,16 +24,19 @@ public class MapaScreen implements Screen, StageInterface {
     private OrthographicCamera camera;
     private Texture fondo;
 
-    private Button btnSala1;
-    private Button btnSala2;
+    private ImageButton btnSotano;
+    private ImageButton btnInvernadero;
     private Skin skin;
+    private Label lbSotano;
+    private Label lbInvernadero;
+    private Window windowComprar;
 
     public MapaScreen(MainGame game)
     {
         this.game=game;
         batchG = game.getBatch();
         camera = new OrthographicCamera();
-        fondo = new Texture("PruebasAssets/mapa.png");
+        fondo = new Texture("Assets/mapa_sin_casas.png");
         initComponentes();
         addComponentes();
         putComponentes();
@@ -76,22 +82,41 @@ public class MapaScreen implements Screen, StageInterface {
     public void initComponentes() {
         stage = new Stage();
         skin = game.skin;
-        btnSala1 = new Button(skin);
-        btnSala2 = new Button(skin);
+
+        final Texture txCasaInvernadero = new Texture("Assets/casa_invernadero.png");
+        final Texture txCasaSotano = new Texture("Assets/casa_sotano.png");
+        final TextureRegionDrawable drwCasaSotano = new TextureRegionDrawable(txCasaSotano);
+        final TextureRegionDrawable drwCasaInvernadero = new TextureRegionDrawable(txCasaInvernadero);
+
+        btnSotano = new ImageButton(drwCasaSotano);
+        btnSotano.setName("Sotano");
+        lbSotano = new Label("Sotano",skin);
+        btnInvernadero = new ImageButton(drwCasaInvernadero);
+        btnInvernadero.setName("Invernadero");
+        lbInvernadero = new Label("Invernadero",skin);
     }
 
     @Override
     public void addComponentes() {
-        stage.addActor(btnSala1);
-        stage.addActor(btnSala2);
+        stage.addActor(btnSotano);
+        stage.addActor(lbSotano);
+        stage.addActor(btnInvernadero);
+        stage.addActor(lbInvernadero);
     }
 
     @Override
     public void putComponentes() {
-        btnSala1.setWidth(20f);
-        btnSala2.setWidth(20f);
-        btnSala1.setPosition(554f,Gdx.graphics.getHeight()-320f);
-        btnSala2.setPosition(651.f, Gdx.graphics.getHeight()-523.0f);
+        //FIXME: añadir VerticalGroup para hacerlo automático
+        Vector2 posSotano= new Vector2();
+        posSotano.x = 917f;
+        posSotano.y = 80f;
+        Vector2 posInvernadero= new Vector2();
+        posInvernadero.x = 75f;
+        posInvernadero.y = 193.0f;
+        btnSotano.setPosition(posSotano.x,posSotano.y);
+        lbSotano.setPosition(posSotano.x,posSotano.y-lbSotano.getHeight());
+        btnInvernadero.setPosition(posInvernadero.x, posInvernadero.y);
+        lbInvernadero.setPosition(posInvernadero.x,posInvernadero.y-lbInvernadero.getHeight());
     }
 
     @Override
@@ -100,22 +125,39 @@ public class MapaScreen implements Screen, StageInterface {
         //TODO cada btn cargará e iniciará una sala
         //TODO Si un jugador tiene comprada una sala podrá cargar la información al hacer click sobre ella, sino le aparecera un dialog para comprarla
 
-        //Click en el botón de la sala del sótano.
-        btnSala1.addListener(new ChangeListener()
+        /*
+        //DEBUG: para ver donde haces click y colocar los botones en el mapa
+        stage.addListener(new ClickListener()
+        {
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+                System.out.println("x: "+x+" y:"+y);
+            }
+
+        });
+        */
+
+        ChangeListener cL = new ChangeListener()
         {
             @Override
             public void changed(ChangeEvent event, Actor actor)
             {
+                String nombreSala="Room_"+actor.getName();
                 //Comprobamos si tiene comprada la sala.
-                if (game.gm.saveData.ownedRooms.get("Room_Sotano"))
+                if (game.gm.saveData.ownedRooms.get(nombreSala))
                 {
-                    game.gm.rmLoader.SetCurrentRoom("Room_Sotano");
+                    game.gm.rmLoader.SetCurrentRoom(nombreSala);
                     game.setScreen(new SalaScreen(game));
                 }else
                 {
-                    //Saldrá el menú para comprar la sala.
+                    //TODO: windowComprar
                 }
             }
-        });
+        };
+
+        //Click en el botón de la sala del sótano.
+        btnSotano.addListener(cL);
+        btnInvernadero.addListener(cL);
     }
 }

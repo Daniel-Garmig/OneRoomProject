@@ -83,7 +83,7 @@ public class SalaScreen implements Screen, StageInterface {
         gestionEventos();
 
         mcTiendaEnSala = new HashMap<>();
-
+        //FIXME: Automatizar por cada sala
         ArrayList<String> mcSotano = new ArrayList<>();
         mcSotano.add("Sotano_Raspi");
         mcSotano.add("Sotano_Mineria");
@@ -419,7 +419,7 @@ public class SalaScreen implements Screen, StageInterface {
     {
         btnStats.setDisabled(true);
 
-        windowStats.setDebug(true, true);
+
 
         TextButton btnCerrarStats = new TextButton("Cerrar", skin);
         windowStats.addActor(btnCerrarStats);
@@ -489,7 +489,7 @@ public class SalaScreen implements Screen, StageInterface {
         bttCerrar.align(Align.top);
         Cell<TextButton> btnCerrarCell = windowTienda.add(bttCerrar);
 
-        windowTienda.setDebug(true, true);
+
 
         windowTienda.row();
 

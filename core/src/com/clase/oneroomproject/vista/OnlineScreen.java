@@ -3,6 +3,8 @@ package com.clase.oneroomproject.vista;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -16,6 +18,8 @@ public class OnlineScreen implements Screen, StageInterface {
     private MainGame game;
     private Stage stage;
     private Skin skin;
+    private SpriteBatch batchG;
+    private Texture fondo;
     /**
      * Campo de texto donde escribes el ID
      */
@@ -25,6 +29,8 @@ public class OnlineScreen implements Screen, StageInterface {
 
     public OnlineScreen(MainGame game) {
         this.game = game;
+        batchG = game.getBatch();
+        fondo = new Texture("Assets/fondoMenu.png");
         initComponentes();
         addComponentes();
         putComponentes();
@@ -39,6 +45,9 @@ public class OnlineScreen implements Screen, StageInterface {
     @Override
     public void render(float delta) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        batchG.begin();
+        batchG.draw(fondo, 0, 0);
+        batchG.end();
         stage.act();
         stage.draw();
     }
@@ -98,7 +107,7 @@ public class OnlineScreen implements Screen, StageInterface {
             @Override
             public void changed(ChangeEvent event, Actor actor)
             {
-                game.setScreen(game.menu);
+                game.setScreen(new MainMenuScreen(game));
             }
         });
     }

@@ -6,12 +6,13 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.clase.oneroomproject.Modelo.LoginSystem;
 import jdk.internal.misc.TerminatingThreadLocal;
@@ -43,11 +44,14 @@ public class MainMenuScreen implements Screen, StageInterface
     /**
      * Botón para empezar a jugar
      */
-    private TextButton btnJugar;
+    private ImageButton btnJugar;
     /**
      * Bóton para llevarte al modo online
      */
-    private TextButton btnOnline;
+    private ImageButton btnOnline;
+
+    private VerticalGroup vGroup;
+
     /**
      * Fondo de la Screen
      */
@@ -67,7 +71,7 @@ public class MainMenuScreen implements Screen, StageInterface
         batchG = game.getBatch();
         camera = new OrthographicCamera();
 
-        fondo = new Texture("PruebasAssets/cargandoFondo.jpg");
+        fondo = new Texture("Assets/fondoMenu.png");
 
         initComponentes();
         addComponentes();
@@ -118,22 +122,35 @@ public class MainMenuScreen implements Screen, StageInterface
     {
         skin = game.skin;
         stage = new Stage();
-        btnJugar = new TextButton("Pulsa para jugar", skin);
-        btnOnline= new TextButton("Modo Online", skin);
+        final Texture txOnline = new Texture("Assets/botonOnline.png");
+        final Texture txJugar = new Texture("Assets/botonJugar.png");
+        final TextureRegionDrawable drwOnline = new TextureRegionDrawable(txOnline);
+        final TextureRegionDrawable drwJugar = new TextureRegionDrawable(txJugar);
+        vGroup=new VerticalGroup();
+        btnJugar =  new ImageButton(drwJugar);
+        btnOnline= new ImageButton(drwOnline);
     }
 
     @Override
     public void addComponentes() {
-        stage.addActor(btnJugar);
-        stage.addActor(btnOnline);
+        stage.addActor(vGroup);
     }
 
     @Override
     public void putComponentes() {
-        btnOnline.setWidth(250f);
-        btnJugar.setWidth(250f);
-        btnOnline.setPosition(((float) Gdx.graphics.getWidth()/2f)-(btnOnline.getWidth()/2f), ((float) Gdx.graphics.getHeight())-((float) Gdx.graphics.getHeight()/2f));
-        btnJugar.setPosition(((float) Gdx.graphics.getWidth()/2f)-((float) btnJugar.getWidth()/2f), (float) btnOnline.getY()-50f);
+        vGroup.align(Align.center);
+        vGroup.padTop(100f);
+
+        vGroup.setWidth(Gdx.graphics.getWidth());
+        vGroup.setHeight(Gdx.graphics.getHeight());
+
+        vGroup.addActor(btnJugar);
+        vGroup.addActor(btnOnline);
+        vGroup.space(50f);
+
+        vGroup.validate();
+        vGroup.layout();
+
     }
 
     @Override
@@ -185,7 +202,7 @@ public class MainMenuScreen implements Screen, StageInterface
             @Override
             public void changed(ChangeEvent event, Actor actor)
             {
-                game.setScreen(game.online);
+                game.setScreen(new OnlineScreen(game));
             }
         });
     }
