@@ -8,14 +8,17 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Window;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
+import com.clase.oneroomproject.Modelo.GameManager;
 import com.clase.oneroomproject.Modelo.RoomLoader;
+
+import java.awt.event.ActionEvent;
 
 public class MapaScreen implements Screen, StageInterface {
 
@@ -30,7 +33,6 @@ public class MapaScreen implements Screen, StageInterface {
     private Skin skin;
     private Label lbSotano;
     private Label lbInvernadero;
-    private Window windowComprar;
 
     public MapaScreen(MainGame game)
     {
@@ -165,9 +167,45 @@ public class MapaScreen implements Screen, StageInterface {
         btnInvernadero.addListener(cL);
     }
 
-    public void crearVentanaComprar(String nombreSala){
-        windowComprar = new Window("Comprar "+nombreSala,skin);
-        Label precio = new Label("¿Comprar "+nombreSala+" por "+ RoomLoader.getInstance().GetRoomByID(nombreSala).getRoomPrice()+"?",skin);
+    public void crearVentanaComprar(final String nombreSala){
+        final Window windowComprar = new Window("Comprar "+nombreSala,skin);
+        windowComprar.setSize(350f,100f);
+        windowComprar.align(Align.left);
+        //FIXME: comprobar precio en salas por defecto
+        Label precio = new Label("¿Comprar "+nombreSala+" por "+ 1000/*RoomLoader.getInstance().GetRoomByID(nombreSala).getRoomPrice()*/+"?",skin);
+        windowComprar.add(precio);
+        windowComprar.row();
 
+        TextButton btnComprar= new TextButton("Comprar",skin);
+        TextButton btnAtras= new TextButton("Atras",skin);
+
+
+
+        btnComprar.addListener(new ClickListener(){
+            @Override
+            public void clicked (InputEvent event, float x, float y)
+            {
+                GameManager.getInstance().ComprarRoom(nombreSala);
+            }
+        });
+
+        btnAtras.addListener(new ClickListener(){
+            @Override
+            public void clicked (InputEvent event, float x, float y)
+            {
+                windowComprar.clearChildren();
+                windowComprar.remove();
+            }
+        });
+
+        windowComprar.add(btnAtras);
+        windowComprar.add(btnComprar);
+        windowComprar.pack();
+
+        windowComprar.setPosition(((float)Gdx.graphics.getWidth()/2) - (windowComprar.getWidth()/2),
+                                  ((float)Gdx.graphics.getHeight()/2)- (windowComprar.getHeight()/2));
+
+        stage.addActor(windowComprar);
+        windowComprar.setDebug(true,true);
     }
 }
