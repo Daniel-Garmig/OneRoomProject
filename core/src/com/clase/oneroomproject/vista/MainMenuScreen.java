@@ -19,6 +19,9 @@ import org.w3c.dom.Text;
 
 import java.io.File;
 
+//TODO: Hay que hacer la autentificación cuando sea necesario.
+//  Así evitamos la conexión a la BD si no es necesaria.
+
 public class MainMenuScreen implements Screen, StageInterface
 {
     /**

@@ -295,6 +295,27 @@ public class GameManager
         return true;
     }
 
+    /**
+     * Realiza la venta de la máquina indicada. Devolverá el 80% del coste original de la máquina.
+     * @param mc Datos de la máquina que se quiere vender.
+     * @param posX Posición de la Máquina X.
+     * @param posY Posición de la Máquina Y.
+     * @return True si se ha completado la venta. False si hay fallado algo.
+     */
+    public boolean VenderMaquina(Machine mc, int posX, int posY)
+    {
+        //Intentamos vender la máquina.
+        if(!rmLoader.GetCurrentRoom().EliminarMaquina(posX, posY))
+        {
+            return false;
+        }
+
+        //Si es correcto, devolvemos el 80% del valor de la máquina.
+        saveData.dinero += mc.machineCost * 0.8;
+
+        return true;
+    }
+
 
     /**
      * Completa un ciclo del juego y el jugador obtiene el dinero de sus máquinas.

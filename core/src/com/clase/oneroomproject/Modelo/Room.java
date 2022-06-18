@@ -145,6 +145,32 @@ public class Room
     }
 
     /**
+     * Comprueba si es posible eliminar la cantidad indicada del recurso máximo indicado sin que las máquinas consuman más de lo que tienen.
+     * @param recurso ID del recurso.
+     * @param cantidad Cantidad del recurso que se quiere eliminar.
+     * @return True si es posible eliminarlo, false si no.
+     */
+    public boolean ComprobarEliminarRecursoMaximo(String recurso, int cantidad)
+    {
+        //Tomamos los recursos.
+        Integer max = recursosMaximos.get(recurso);
+        Integer ocupados = recursosOcupados.get(recurso);
+        //Comprobamos si existen.
+        if(max == null || ocupados == null)
+        {
+            Gdx.app.error("Room - " + roomName , "El recurso " + recurso + " no existe en esta sala");
+            return false;
+        }
+        //Comprobamos si se superaría el máximo en caso de quitarlo.
+        if(ocupados > (max - cantidad))
+        {
+            //Gdx.app.debug("Room - " + roomName, "El recurso " + attribute + " de esta sala ya está lleno.");
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * Permite comprobar si se puede añadir una máquina a la sala.
      * @param maquinaComprobar Ptr a la máquina que se quiere comprobar.
      * @return True si es posible añadir la máquina, False si no hay recursos o espacio suficiente.
@@ -285,6 +311,32 @@ public class Room
         }
     }
 
+    /**
+     * Comprueba si es posible eliminar la máquina indicada.
+     * Es decir, si los recursos de esta máquina no son esenciales para mantener a las demás.
+     * @param maquinaComprobar Máquina que se quiere comprobar.
+     * @return True si se puede eliminar, false si no.
+     */
+    public boolean ComprobarEliminarMaquinaRecursos(Machine maquinaComprobar)
+    {
+        //Si no es de recursos, no hace falta comprobar esto. Se puede eliminar sin problemas.
+        if(!maquinaComprobar.esDeRecursos)
+        {
+            return true;
+        }
+
+        //Se procesarían los atributos para comprobar si se puede añadir la máquina.
+        for(String key : maquinaComprobar.attributes.keySet())
+        {
+            int value = maquinaComprobar.GetAtributeValue(key);
+            if(!ComprobarCapacidadRecurso(key, value))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
 
     /**
      * Mueve una máquina de una casilla a otra.
@@ -320,23 +372,35 @@ public class Room
      * Elimina la máquina en la posición indicada.
      * Devuelve los recursos que esta máquina consumía/generaba.
      *
-     * FIXME: Si la máquina es de recursos, hay que comprobar que se puede eliminar.
      * @param posX Posición x de la máquina a eliminar.
      * @param posY Posición y de la máquina a eliminar.
+     * @return True si se ha completado la eliminación. False si ha ocurrido un error.
      */
-    public void EliminarMaquina(int posX, int posY)
+    public boolean EliminarMaquina(int posX, int posY)
     {
         //Obtenemos la máquina de esta posición.
         Machine mc = machineData[posY][posX];
 
-        //Extraemos la variable por optimización.
-        boolean deRecursos = mc.isEsDeRecursos();
+        //Si es de recursos, comprobamos que se pueda eliminar.
+        if(mc.esDeRecursos)
+        {
+            //Si no se puede eliminar, no continuamos.
+            if(!ComprobarEliminarMaquinaRecursos(mc))
+            {
+                return false;
+            }
+        }
 
         ModificarRecursosPorMaquina(mc, false);
 
         //Quitamos el dinero que produce.
         dineroPorCiclo -= mc.dineroProducido;
         roomScore -= mc.machineCost;
+
+        //Quitamos la MC del mapa.
+        machineData[posY][posX] = null;
+
+        return true;
     }
 
 

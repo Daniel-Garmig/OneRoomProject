@@ -334,14 +334,14 @@ public class SalaScreen implements Screen, StageInterface {
                 //Sacamos la máquina.
                 Machine mc = mcData[y][x];
 
-                //Si la máquina no existe, la saltamos (para evitar excepciones).
+                //Si la máquina no existe, utilizamos la tile vacía de la NULLMC.
                 if(mc == null)
                 {
-                    continue;
+                    mc = MachineLoader.getInstance().GetMachine("NULLMC");
                 }
+                TiledMapTileSet mcTileSet = game.tsm.GetTileSet(mc.getTileSetID());
 
                 //Obtenemos el TileSet para esa máquina.
-                TiledMapTileSet mcTileSet = game.tsm.GetTileSet(mc.getTileSetID());
 
                 TiledMapTileLayer.Cell ce = new TiledMapTileLayer.Cell();
                 ce.setTile(mcTileSet.getTile(mc.getTilePos()));
@@ -447,9 +447,13 @@ public class SalaScreen implements Screen, StageInterface {
 
         group.addActor(new Label("Recursos de la sala: ", skin));
 
+        //Sabiendo los recursos de la sala, obtenemos los máximos y los ocupados.
+        for (String rec : nombresRecursos)
+        {
+            int recurOcu = currentRoom.getRecursosOcupados().get(rec);
+            int recurMax = currentRoom.getRecursosMaximos().get(rec);
 
-        for (String rec : nombresRecursos) {
-            String rs = "   - " + rec + ": " + 5 + "/" + 10;
+            String rs = "   - " + rec + ": " + recurOcu + "/" + recurMax;
             group.addActor(new Label(rs, skin));
         }
 
@@ -543,7 +547,7 @@ public class SalaScreen implements Screen, StageInterface {
                 @Override
                 public void changed(ChangeEvent event, Actor actor)
                 {
-                    ComprarMachine(mcName, tx);
+                    MostrarCompraMaquina(mcName, tx);
                 }
             });
 
@@ -568,7 +572,7 @@ public class SalaScreen implements Screen, StageInterface {
      * @param mcName Nombre de la máquina.
      * @param mcTx Textura de la máquina.
      */
-    public void ComprarMachine(String mcName, TextureRegion mcTx)
+    public void MostrarCompraMaquina(String mcName, TextureRegion mcTx)
     {
             //Obtenemos la máquina sobre la que trabajamos.
             final Machine mc = MachineLoader.getInstance().GetMachine(mcName);
@@ -632,19 +636,13 @@ public class SalaScreen implements Screen, StageInterface {
                     //Comprobamos si tiene dinero.
                     if(game.gm.GetDinero() < mc.getMachineCost())
                     {
-                        Dialog dg = new Dialog("No tienes dinero", skin);
-                        dg.text("No tienes dinero para comprar esta máquina.");
-                        dg.button("Ok");
-                        mcBuyWindow.addActor(dg);
+                        CreateDialog("No tienes dinero", "No tienes dinero para comprar esta máquina.", "OK.");
                         return;
                     }
                     //Comprobamos si la sala tiene recursos para esa máquina.
                     if(!currentRoom.ComprobarRecursosParaMaquina(mc))
                     {
-                        Dialog dg = new Dialog("No tienes recursos", skin);
-                        dg.text("No se puede comprar la máquina, \nla sala no tiene recursos suficientes.");
-                        dg.button("Ok");
-                        mcBuyWindow.addActor(dg);
+                        CreateDialog("No tienes recursos", "No se puede comprar la máquina, \nla sala no tiene recursos suficientes.", "OK.");
                         return;
                     }
 
@@ -666,7 +664,9 @@ public class SalaScreen implements Screen, StageInterface {
             mcBuyWindow.add(btnCerrarCompra);
             mcBuyWindow.add(btnComprarMC);
 
-            mcBuyWindow.layout();
+            mcBuyWindow.pack();
+            mcBuyWindow.setPosition(((float)Gdx.graphics.getWidth()/2) - (mcBuyWindow.getWidth()/2),
+                                    ((float)Gdx.graphics.getHeight()/2) - (mcBuyWindow.getHeight()/2));
 
             stage.addActor(mcBuyWindow);
 
@@ -736,7 +736,7 @@ public class SalaScreen implements Screen, StageInterface {
         //Se comprueba si la posición es válida.
         if(!currentRoom.ComprobarPosicion(tileNumX, tileNumY))
         {
-            //TODO: Se indicará más visualmente que no se puede colocar ahí.
+            CreateDialog("La posicion no es valida.", "La posicion indicada no es valida. \nVuelva a intentarlo.", "Ok");
             modoCompra = false;
             ClearShadowLayer();
             return;
@@ -748,10 +748,7 @@ public class SalaScreen implements Screen, StageInterface {
         //Si no se completa la compra, error.
         if(!game.gm.ComprarMachine(mcEspectral, tileNumX, tileNumY))
         {
-            Dialog dg = new Dialog("ERROR", skin);
-            dg.text("No se ha podido comprar la máquina.\nVuelva a intentarlo más tarde");
-            dg.button("Ok");
-            stage.addActor(dg);
+            CreateDialog("ERROR", "No se ha podido comprar la máquina.\nVuelva a intentarlo mas tarde", "OK.");
         }
 
         modoCompra = false;
@@ -763,13 +760,137 @@ public class SalaScreen implements Screen, StageInterface {
     }
 
 
-    public void SeleccionarMC(int tileNumX, int tileNumY)
+    public void SeleccionarMC(final int tileNumX, final int tileNumY)
     {
-        //Obtenemos la posición dentro del TileMap que corresponde con el ratón.
-        Gdx.app.log("SalaScreen", "Tile: " + tileNumX + ", " + tileNumY);
+        //Comprobamos si hay una MC en la posicón indicada.
+        if(currentRoom.ComprobarPosicion(tileNumX, tileNumY))
+        {
+            //Si la posición está vacía, no hay máquina, terminamos.
+            return;
+        }
+
+        //Obtenemos la MC en esta posición.
+        final Machine mc = currentRoom.getMachineData()[tileNumY][tileNumX];
+
+        //Comprobamos si es una NULLMC, pues no se puede seleccionar.
+        if(mc.getMachineID().equals("NULLMC"))
+        {
+            return;
+        }
+
+        //Seleccionamos esa máquina (poniendo brillo)
+        //Obtenemos la tile con brillo.
+        TiledMapTile brilliTile = game.tsm.GetTileSet(mc.getTileSetID()).getTile(mc.getTilePos()+1);
+        final TiledMapTile mcTile = game.tsm.GetTileSet(mc.getTileSetID()).getTile(mc.getTilePos());
+
+        //Obtenemos la celda y le cambiamos el brillo.
+        TiledMapTileLayer mcLayer = (TiledMapTileLayer) map.getLayers().get("mcLayer");
+        final TiledMapTileLayer.Cell c = mcLayer.getCell(tileNumX, tileNumY);
+
+        //Comprobamos si ya está en brillo. En cuyo caso, no tenemos que abrir otra ventana.
+        if(c.getTile().equals(brilliTile))
+        {
+            return;
+        }
+
+        c.setTile(brilliTile);
+
+
+        //Y mostramos la ventana de información.
+        final Window mcInfoWindow = new Window(mc.getMachineID(), skin);
+
+
+        //Mostramos información sobre la máquina.
+        Label posLabel = new Label("Position: " + tileNumX + ", " + tileNumY, skin);
+        mcInfoWindow.add(posLabel);
+
+        Image mcImage = new Image(mcTile.getTextureRegion());
+        mcInfoWindow.add(mcImage);
+
+        mcInfoWindow.row();
+
+        Label dineroLabel = new Label("Dinero/ciclo: " + mc.getDineroProducido(), skin);
+        mcInfoWindow.add(dineroLabel);
+
+        mcInfoWindow.row();
+
+        Label vCompraLabel = new Label("Valor Compra: " + mc.getMachineCost(), skin);
+        mcInfoWindow.add(vCompraLabel);
+
+        Label vVentaLabel = new Label("Valor Venta: " + mc.getMachineCost() * 0.8f, skin);
+        mcInfoWindow.add(vVentaLabel);
+
+        mcInfoWindow.row();
+
+        TextButton cerrarBt = new TextButton("Cerrar", skin);
+        mcInfoWindow.add(cerrarBt);
+
+        TextButton eliminarBt = new TextButton("Vender", skin);
+        mcInfoWindow.add(eliminarBt);
+
+
+        cerrarBt.addListener(new ChangeListener()
+        {
+            @Override
+            public void changed(ChangeEvent event, Actor actor)
+            {
+                //Cambiamo la tile a la normal.
+                c.setTile(mcTile);
+
+                //Cerramos la ventana.
+                mcInfoWindow.clearChildren();
+                mcInfoWindow.remove();
+            }
+        });
+
+        eliminarBt.addListener(new ChangeListener()
+        {
+            @Override
+            public void changed(ChangeEvent event, Actor actor)
+            {
+                //Probamos a eliminar la máquina.
+                if(!game.gm.VenderMaquina(mc, tileNumX, tileNumY))
+                {
+                    CreateDialog("No se puede vender", "La máquina indicada no puede ser vendida." +
+                            "\nSi es de recursos, comprueba que tienes recusos suficientes", "ok");
+                    return;
+                }
+
+                //Cerramos la ventana.
+                mcInfoWindow.clearChildren();
+                mcInfoWindow.remove();
+
+                UpdateTileMap();
+            }
+        });
+
+
+        mcInfoWindow.pack();
+        stage.addActor(mcInfoWindow);
+
 
         //Se comprobará esa posición para ver si hay una máquina.
         // Si la hay, se seleccionará y mostrará la ventana de información.
         //  Y se pondrá la máquina con formato "brilli".
+    }
+
+    /**
+     * Crea un nuevo diálogo y lo añade al Stage.
+     * @param title Título del diálogo.
+     * @param text Texto que tiene
+     * @param textButton Texto en el botón.
+     */
+    public void CreateDialog(String title, String text, String textButton)
+    {
+        Dialog dg = new Dialog(title, skin);
+        dg.text(text);
+        dg.button(textButton);
+        //dg.layout();
+        //dg.validate();
+        dg.align(Align.center);
+        dg.pack();
+        dg.setPosition(((float)Gdx.graphics.getWidth()/2) - (dg.getWidth()/2),
+                       ((float)Gdx.graphics.getHeight()/2) - (dg.getHeight()/2));
+        stage.addActor(dg);
     }
 }
