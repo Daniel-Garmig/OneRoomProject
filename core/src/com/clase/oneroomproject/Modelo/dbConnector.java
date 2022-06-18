@@ -132,7 +132,7 @@ public class dbConnector
      */
     public static boolean ComprobarNickDisponible(String nick)
     {
-
+        CheckIsInit();
         //Creamos el Statement.
         Statement stt = CrearStatement();
 

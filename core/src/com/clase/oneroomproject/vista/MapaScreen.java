@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.clase.oneroomproject.Modelo.RoomLoader;
 
 public class MapaScreen implements Screen, StageInterface {
 
@@ -151,7 +152,10 @@ public class MapaScreen implements Screen, StageInterface {
                     game.setScreen(new SalaScreen(game));
                 }else
                 {
+                    Gdx.app.log("MapaScreen","Intento comprar "+nombreSala);
                     //TODO: windowComprar
+                    crearVentanaComprar(nombreSala);
+
                 }
             }
         };
@@ -159,5 +163,11 @@ public class MapaScreen implements Screen, StageInterface {
         //Click en el botón de la sala del sótano.
         btnSotano.addListener(cL);
         btnInvernadero.addListener(cL);
+    }
+
+    public void crearVentanaComprar(String nombreSala){
+        windowComprar = new Window("Comprar "+nombreSala,skin);
+        Label precio = new Label("¿Comprar "+nombreSala+" por "+ RoomLoader.getInstance().GetRoomByID(nombreSala).getRoomPrice()+"?",skin);
+
     }
 }
