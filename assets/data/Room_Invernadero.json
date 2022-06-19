@@ -11,7 +11,7 @@
 		"Refrigeracion": 10,
 		"Electricidad": 5
 	},
-	"BackGroundTileSet": "BGTileSet_Sotano",
+	"BackGroundTileSet": "BGTileSet_Invernadero",
 	"BackgroundData": [
 		[ 7, 3, 3, 3, 3, 3, 3, 3, 6 ],
 		[ 0, 8, 8, 8, 8, 8, 8, 8, 2 ],

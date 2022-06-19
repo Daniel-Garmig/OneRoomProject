@@ -120,7 +120,10 @@ public class MainGame extends Game {
 	{
 		skin = new Skin(Gdx.files.internal("pruebaSkin/uiskin.json"));
 		tsm.loadTileSet("Assets/MCTileSet_Sotano.png", "MCTileSet_Sotano", 64, 64);
+		//FIXME: Cuando tengas las maquinas descomentar
+		// tsm.loadTileSet("Assets/MCTileSet_Invernedor.png", "MCTileSet_Invernadero", 64, 64);
 		tsm.loadTileSet("Assets/SotanoTileSet.png", "BGTileSet_Sotano", 64,64);
+		tsm.loadTileSet("Assets/InvernaderoTileSet.png", "BGTileSet_Invernadero", 64,64);
 		gm.mcLoader.LoadFromJSON(Gdx.files.internal("data/Machines.json"));
 	}
 }

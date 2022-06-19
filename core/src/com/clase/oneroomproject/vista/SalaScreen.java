@@ -124,7 +124,7 @@ public class SalaScreen implements Screen, StageInterface {
     public void show()
     {
         Gdx.input.setInputProcessor(stage);
-        marco = new Texture("PruebasAssets/marco.png");
+        marco = new Texture("Assets/marco_"+RoomLoader.getInstance().GetCurrentRoom().getRoomName()+".png");
         camera.setToOrtho(false, (float)Gdx.graphics.getWidth(), (float)Gdx.graphics.getHeight());
         camera.translate(tileMapPositionOffset);
         CreateTileMap();
