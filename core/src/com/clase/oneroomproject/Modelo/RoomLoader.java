@@ -152,12 +152,12 @@ public class RoomLoader
     public void UnloadAllRooms()
     {
         //Iteramos por todas las salas, descargándolas.
-        for(Room r : loadedRooms.values())
-        {
-            UnloadRoom(r.roomName);
-        }
+//        for(Room r : loadedRooms.values())
+//        {
+//            UnloadRoom(r.roomName);
+//        }
         //También podríamos ejecutar directamente un
-        //loadedRooms.clear();
+        loadedRooms.clear();
     }
 
 

@@ -206,7 +206,10 @@ public class Room
     public boolean ComprobarPosicion(int x, int y)
     {
         //Evitamos salirnos del Array.
-        if(y >= machineData.length || x >= machineData[0].length)
+        if(y >= machineData.length ||
+                y < 0 ||
+                x >= machineData[0].length ||
+                x < 0)
         {
             return false;
         }

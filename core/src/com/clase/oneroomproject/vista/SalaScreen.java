@@ -1010,7 +1010,10 @@ public class SalaScreen implements Screen, StageInterface {
 
         Machine[][] mcData = currentRoom.getMachineData();
 
-        if(tileNumY >= mcData.length || tileNumX >= mcData[0].length)
+        if(tileNumY >= mcData.length ||
+                tileNumX >= mcData[0].length ||
+                tileNumX < 0 ||
+                tileNumY < 0)
         {
             return;
         }
