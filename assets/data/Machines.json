@@ -87,10 +87,7 @@
 	{
 		"class": "com.clase.oneroomproject.Modelo.Machine",
 		"machineID": "Sotano_PC",
-		"attributes": {
-			"Electricidad": 0,
-			"Refrigeracion": 0
-		},
+		"attributes": {},
 		"esDeRecursos": false,
 		"machineCost": 100,
 		"dineroProducido": -100,
