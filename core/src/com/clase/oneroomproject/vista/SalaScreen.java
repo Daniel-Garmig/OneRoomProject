@@ -81,6 +81,7 @@ public class SalaScreen implements Screen, StageInterface {
     private boolean saved = false;
     private boolean pausado = false;
 
+
     public SalaScreen(MainGame game)
     {
         this.game = game;
@@ -93,22 +94,29 @@ public class SalaScreen implements Screen, StageInterface {
         gestionEventos();
 
         mcTiendaEnSala = new HashMap<>();
-        //FIXME: Automatizar por cada sala
-        //  JA! No pienso serializarlo a otro JSON. GLHF. Hazlo a mano.
-        //      - Daniel
+
         ArrayList<String> mcSotano = new ArrayList<>();
         mcSotano.add("Sotano_Raspi");
         mcSotano.add("Sotano_Mineria");
         mcSotano.add("Sotano_Rack");
         mcSotano.add("Sotano_PC");
+        //Maquinas de recursos
+        mcSotano.add("Recursos_Acondicionado");
+        mcSotano.add("Recursos_DepositoAgua");
+        mcSotano.add("Recursos_Transformador");
 
         mcTiendaEnSala.put("Room_Sotano", mcSotano);
 
+
         ArrayList<String> mcInverna = new ArrayList<>();
-        mcInverna.add("Sotano_Raspi");
-        mcInverna.add("Sotano_Mineria");
-        mcInverna.add("Sotano_Rack");
+        mcInverna.add("Invernadero_Setas");
+        mcInverna.add("Invernadero_Opio");
+        mcInverna.add("Invernadero_Mariguana");
         mcInverna.add("Sotano_PC");
+        //Maquinas de recursos
+        mcInverna.add("Recursos_Acondicionado");
+        mcInverna.add("Recursos_DepositoAgua");
+        mcInverna.add("Recursos_Transformador");
 
         mcTiendaEnSala.put("Room_Invernadero", mcInverna);
 

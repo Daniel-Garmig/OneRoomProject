@@ -119,11 +119,17 @@ public class MainGame extends Game {
 	private void LoadGameAssets()
 	{
 		skin = new Skin(Gdx.files.internal("pruebaSkin/uiskin.json"));
-		tsm.loadTileSet("Assets/MCTileSet_Sotano.png", "MCTileSet_Sotano", 64, 64);
-		//FIXME: Cuando tengas las maquinas descomentar
-		// tsm.loadTileSet("Assets/MCTileSet_Invernedor.png", "MCTileSet_Invernadero", 64, 64);
+
+		//Texturas maquinas recursos
+		tsm.loadTileSet("Assets/MCTileSet_Recursos.png", "MCTileSet_Recursos", 64, 64);
+		//Texturas Sotano
 		tsm.loadTileSet("Assets/SotanoTileSet.png", "BGTileSet_Sotano", 64,64);
+		tsm.loadTileSet("Assets/MCTileSet_Sotano.png", "MCTileSet_Sotano", 64, 64);
+		//Texturas Invernadero
+		tsm.loadTileSet("Assets/MCTileSet_Invernadero.png", "MCTileSet_Invernadero", 64, 64);
 		tsm.loadTileSet("Assets/InvernaderoTileSet.png", "BGTileSet_Invernadero", 64,64);
+
+		//Carga de maquinas
 		gm.mcLoader.LoadFromJSON(Gdx.files.internal("data/Machines.json"));
 	}
 }

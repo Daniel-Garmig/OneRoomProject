@@ -11,16 +11,39 @@
 	},
 	{
 		"class": "com.clase.oneroomproject.Modelo.Machine",
-		"machineID": "Sotano_Raspi",
+		"machineID": "Recursos_Acondicionado",
 		"attributes": {
-			"Electricidad": 0,
-			"Refrigeracion": 0
+			"Refrigeracion": 10
 		},
-		"esDeRecursos": false,
-		"machineCost": 5,
-		"dineroProducido": 8,
-		"tileSetID": "MCTileSet_Sotano",
+		"esDeRecursos": true,
+		"machineCost": 1,
+		"dineroProducido": 0,
+		"tileSetID": "MCTileSet_Recursos",
 		"tilePos": 2
+	},
+	{
+		"class": "com.clase.oneroomproject.Modelo.Machine",
+		"machineID": "Recursos_DepositoAgua",
+		"attributes": {
+			"Abono": 10
+		},
+		"esDeRecursos": true,
+		"machineCost": 1,
+		"dineroProducido": 0,
+		"tileSetID": "MCTileSet_Recursos",
+		"tilePos": 4
+	},
+	{
+		"class": "com.clase.oneroomproject.Modelo.Machine",
+		"machineID": "Recursos_Transformador",
+		"attributes": {
+			"Electricidad": 10
+		},
+		"esDeRecursos": true,
+		"machineCost": 1,
+		"dineroProducido": 0,
+		"tileSetID": "MCTileSet_Recursos",
+		"tilePos": 6
 	},
 	{
 		"class": "com.clase.oneroomproject.Modelo.Machine",
@@ -33,7 +56,7 @@
 		"machineCost": 10,
 		"dineroProducido": 15,
 		"tileSetID": "MCTileSet_Sotano",
-		"tilePos": 4
+		"tilePos": 2
 	},
 	{
 		"class": "com.clase.oneroomproject.Modelo.Machine",
@@ -45,6 +68,19 @@
 		"esDeRecursos": false,
 		"machineCost": 15,
 		"dineroProducido": 30,
+		"tileSetID": "MCTileSet_Sotano",
+		"tilePos": 4
+	},
+	{
+		"class": "com.clase.oneroomproject.Modelo.Machine",
+		"machineID": "Sotano_Raspi",
+		"attributes": {
+			"Electricidad": 0,
+			"Refrigeracion": 0
+		},
+		"esDeRecursos": false,
+		"machineCost": 5,
+		"dineroProducido": 8,
 		"tileSetID": "MCTileSet_Sotano",
 		"tilePos": 6
 	},
@@ -60,5 +96,44 @@
 		"dineroProducido": 1,
 		"tileSetID": "MCTileSet_Sotano",
 		"tilePos": 8
+	},
+	{
+		"class": "com.clase.oneroomproject.Modelo.Machine",
+		"machineID": "Invernadero_Setas",
+		"attributes": {
+			"Electricidad": 0,
+			"Refrigeracion": 0
+		},
+		"esDeRecursos": false,
+		"machineCost": 5,
+		"dineroProducido": 8,
+		"tileSetID": "MCTileSet_Invernadero",
+		"tilePos": 2
+	},
+	{
+		"class": "com.clase.oneroomproject.Modelo.Machine",
+		"machineID": "Invernadero_Opio",
+		"attributes": {
+			"Electricidad": 0,
+			"Refrigeracion": 0
+		},
+		"esDeRecursos": false,
+		"machineCost": 10,
+		"dineroProducido": 15,
+		"tileSetID": "MCTileSet_Invernadero",
+		"tilePos": 4
+	},
+	{
+		"class": "com.clase.oneroomproject.Modelo.Machine",
+		"machineID": "Invernadero_Mariguana",
+		"attributes": {
+			"Electricidad": 0,
+			"Refrigeracion": 0
+		},
+		"esDeRecursos": false,
+		"machineCost": 15,
+		"dineroProducido": 22,
+		"tileSetID": "MCTileSet_Invernadero",
+		"tilePos": 6
 	}
 ]
