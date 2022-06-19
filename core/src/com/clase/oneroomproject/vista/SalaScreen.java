@@ -213,7 +213,8 @@ public class SalaScreen implements Screen, StageInterface {
         //Indicamos el tamaño de las cosas.
         btnStats.setSize(100f,20f);
         btnTienda.setSize(100f, 20f);
-        windowStats.setSize(800f, 400f);
+        btnCompletarCiclo.setSize(100f, 20f);
+        windowStats.setSize(300f, 400f);
         windowTienda.setSize(800f, 400f);
 
         windowStats.setResizable(true);
@@ -223,6 +224,7 @@ public class SalaScreen implements Screen, StageInterface {
         if(currentRoom.isEsOnline())
         {
             btnTienda.setDisabled(true);
+            btnCompletarCiclo.setDisabled(true);
         }
 
         //Añadimos y configuramos las cosas de la barra superior.
@@ -240,6 +242,8 @@ public class SalaScreen implements Screen, StageInterface {
 
         barraGroup.addActor(lbDinero);
         barraGroup.addActor(lbDineroPorCiclo);
+
+        barraGroup.addActor(btnCompletarCiclo);
 
         barraGroup.padRight(80);
         barraGroup.padTop(10);
@@ -278,6 +282,25 @@ public class SalaScreen implements Screen, StageInterface {
             }
         });
 
+        /**
+         * Botón para completar el ciclo y ganar dinero.
+         */
+        btnCompletarCiclo.addListener(new ChangeListener()
+        {
+            @Override
+            public void changed(ChangeEvent event, Actor actor)
+            {
+                CreateDialog("Buen trabajo.", "Se ha completado un ciclo." +
+                        "\nHas recolectado las ganancias del ciclo." +
+                        "\nBuen trabajo.",
+                             "Perfecto!");
+                game.gm.CompletarCiclo();
+            }
+        });
+
+        /**
+         * Listener de Stage para cuando hago click.
+         */
         stage.addListener(new ClickListener()
         {
             @Override

@@ -265,6 +265,7 @@ public class GameManager
 
         //Actualizamos el Save para indicar que se tiene esa sala.
         saveData.ownedRooms.put(roomID, true);
+        SaveLoader.SaveToJSON(saveData, Gdx.files.local(localSavePath + "save.json"));
 
         //Añadimos la sala comprada a la BD (La versión por defecto que tenemos cargada).
         dbConnector.AddNewRoomToDB(roomID);

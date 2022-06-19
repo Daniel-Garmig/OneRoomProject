@@ -209,6 +209,10 @@ public class MapaScreen implements Screen, StageInterface {
                     return;
                 }
                 CreateDialog("Comprado", "Se ha comprado la sala " + nombreSala, "Gracias!");
+
+                //Cerramos el mensaje de comprar.
+                windowComprar.clearChildren();
+                windowComprar.remove();
             }
         });
 
