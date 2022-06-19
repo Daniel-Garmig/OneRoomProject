@@ -47,14 +47,14 @@
 			null,
 			null,
 			"Sotano_Raspi",
-			"Sotano_Rack",
+			null,
 			null,
 			null,
 			"NULLMC"
 		],
 		[
 			"NULLMC",
-			null,
+			"Sotano_PC",
 			null,
 			null,
 			null,
