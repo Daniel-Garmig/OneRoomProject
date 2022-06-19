@@ -209,8 +209,20 @@ public class MainMenuScreen implements Screen, StageInterface
             @Override
             public void changed(ChangeEvent event, Actor actor)
             {
+                //Comprobamos si existe el usuario.
+                if(!game.gm.ComprobarExisteUsuario())
+                {
+                    //Si no existe, le pedimos que juegue primero.
+                    CreateDialog("Aún no puedes",
+                                 "Primero tienes que tener tu propia partida" +
+                                         "\nCrea una partida antes de entrar al OnLine",
+                                 "Ok, lo haré.");
+                    return;
+                }
+
                 //Cargamos el usuario.
                 LoginSystem.LoadFromJSON();
+
                 if(!game.gm.AutentificarUsuario())
                 {
                     CreateDialog("Error de Autenticación",

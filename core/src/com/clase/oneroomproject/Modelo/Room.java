@@ -397,6 +397,9 @@ public class Room
         dineroPorCiclo -= mc.dineroProducido;
         roomScore -= mc.machineCost;
 
+        //Devolvemos el hueco ocupado.
+        espacioOcupado--;
+
         //Quitamos la MC del mapa.
         machineData[posY][posX] = null;
 

@@ -350,7 +350,6 @@ public class SalaScreen implements Screen, StageInterface {
                 return true;
             }
         });
-        //TODO Me gustaría utilizar el ESC para cancelar la compra de una máquina.
     }
 
 
@@ -562,6 +561,17 @@ public class SalaScreen implements Screen, StageInterface {
                 btnStats.setDisabled(false);
             }
         });
+
+        //Si hace click en la ventana, lo handleamos para evitar que continúe.
+        windowStats.addListener(new ClickListener()
+        {
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+                super.clicked(event, x, y);
+                event.handle();
+            }
+        });
     }
 
     /**
@@ -602,6 +612,17 @@ public class SalaScreen implements Screen, StageInterface {
                 windowTienda.clearChildren();
                 windowTienda.remove();
                 btnTienda.setDisabled(false);
+            }
+        });
+
+        //Si hace click en la ventana, lo handleamos para evitar que continúe.
+        windowTienda.addListener(new ClickListener()
+        {
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+                super.clicked(event, x, y);
+                event.handle();
             }
         });
     }

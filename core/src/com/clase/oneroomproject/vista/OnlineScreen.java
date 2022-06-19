@@ -27,7 +27,8 @@ public class OnlineScreen implements Screen, StageInterface {
     private TextButton btnAtras;
     private TextButton btnBuscar;
 
-    public OnlineScreen(MainGame game) {
+    public OnlineScreen(MainGame game)
+    {
         this.game = game;
         batchG = game.getBatch();
         fondo = new Texture("Assets/fondoMenu.png");

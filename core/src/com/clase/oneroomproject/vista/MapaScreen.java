@@ -48,13 +48,15 @@ public class MapaScreen implements Screen, StageInterface {
     }
 
     @Override
-    public void show() {
+    public void show()
+    {
         camera.setToOrtho(false, 0, 0);
         Gdx.input.setInputProcessor(stage);
     }
 
     @Override
-    public void render(float delta) {
+    public void render(float delta)
+    {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         camera.update();
         batchG.begin();
@@ -83,7 +85,8 @@ public class MapaScreen implements Screen, StageInterface {
 
 
     @Override
-    public void initComponentes() {
+    public void initComponentes()
+    {
         stage = new Stage();
         skin = game.skin;
 
@@ -98,10 +101,13 @@ public class MapaScreen implements Screen, StageInterface {
         btnInvernadero = new ImageButton(drwCasaInvernadero);
         btnInvernadero.setName("Invernadero");
         lbInvernadero = new Label("Invernadero",skin);
+
+        MostrarButtonVolver();
     }
 
     @Override
-    public void addComponentes() {
+    public void addComponentes()
+    {
         stage.addActor(btnSotano);
         stage.addActor(lbSotano);
         stage.addActor(btnInvernadero);
@@ -109,7 +115,8 @@ public class MapaScreen implements Screen, StageInterface {
     }
 
     @Override
-    public void putComponentes() {
+    public void putComponentes()
+    {
         //FIXME: añadir VerticalGroup para hacerlo automático
         Vector2 posSotano= new Vector2();
         posSotano.x = 917f;
@@ -154,7 +161,6 @@ public class MapaScreen implements Screen, StageInterface {
                 {
                     Gdx.app.log("MapaScreen","Intento comprar "+nombreSala);
                     crearVentanaComprar(nombreSala);
-
                 }
             }
         };
@@ -164,7 +170,8 @@ public class MapaScreen implements Screen, StageInterface {
         btnInvernadero.addListener(cL);
     }
 
-    public void crearVentanaComprar(final String nombreSala){
+    public void crearVentanaComprar(final String nombreSala)
+    {
         final Window windowComprar = new Window("Comprar "+nombreSala,skin);
 
         //FIXME: Codigo para cargar sala copiado de GameManage.ComprarRoom
@@ -180,15 +187,24 @@ public class MapaScreen implements Screen, StageInterface {
         TextButton btnAtras= new TextButton("Atras",skin);
 
 
-        btnComprar.addListener(new ClickListener(){
+        btnComprar.addListener(new ClickListener()
+        {
             @Override
             public void clicked (InputEvent event, float x, float y)
             {
-                GameManager.getInstance().ComprarRoom(nombreSala);
+                if(!GameManager.getInstance().ComprarRoom(nombreSala))
+                {
+                    CreateDialog("No tienes dinero.", "No puedes comprar la sala." +
+                            "\nNo tienes suficiente dinero " +
+                            "\n Tienes: " + game.gm.GetDinero() + "$.", "OK");
+                    return;
+                }
+                CreateDialog("Comprado", "Se ha comprado la sala " + nombreSala, "Gracias!");
             }
         });
 
-        btnAtras.addListener(new ClickListener(){
+        btnAtras.addListener(new ClickListener()
+        {
             @Override
             public void clicked (InputEvent event, float x, float y)
             {
@@ -205,6 +221,47 @@ public class MapaScreen implements Screen, StageInterface {
                                   ((float)Gdx.graphics.getHeight()/2)- (windowComprar.getHeight()/2));
 
         stage.addActor(windowComprar);
-        windowComprar.setDebug(true,true);
+    }
+
+    /**
+     * Genera y muestra el botón de volver atrás.
+     */
+    public void MostrarButtonVolver()
+    {
+        TextButton btVolver = new TextButton("Salir", skin);
+        btVolver.setSize(150, 25);
+        btVolver.setPosition(25, Gdx.graphics.getHeight() - 45);
+
+        btVolver.addListener(new ChangeListener()
+        {
+            @Override
+            public void changed(ChangeEvent event, Actor actor)
+            {
+                game.setScreen(new MainMenuScreen(game));
+            }
+        });
+
+        stage.addActor(btVolver);
+    }
+
+
+    /**
+     * Crea un nuevo diálogo y lo añade al Stage.
+     * @param title Título del diálogo.
+     * @param text Texto que tiene
+     * @param textButton Texto en el botón.
+     */
+    public void CreateDialog(String title, String text, String textButton)
+    {
+        Dialog dg = new Dialog(title, skin);
+        dg.text(text);
+        dg.button(textButton);
+        //dg.layout();
+        //dg.validate();
+        dg.align(Align.center);
+        dg.pack();
+        dg.setPosition(((float)Gdx.graphics.getWidth()/2) - (dg.getWidth()/2),
+                       ((float)Gdx.graphics.getHeight()/2) - (dg.getHeight()/2));
+        stage.addActor(dg);
     }
 }
