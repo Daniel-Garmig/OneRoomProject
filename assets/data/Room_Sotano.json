@@ -4,12 +4,11 @@
 		"x": 9,
 		"y": 5
 	},
-	"RoomPrice": 250,
+	"RoomPrice": 0,
 	"HuecosDisponibles": 45,
 	"CapacidadPorDefecto": {
-		"Abonos": 8,
-		"Refrigeracion": 10,
-		"Electricidad": 5
+		"Refrigeracion": 670,
+		"Electricidad": 140
 	},
 	"BackGroundTileSet": "BGTileSet_Sotano",
 	"BackgroundData": [

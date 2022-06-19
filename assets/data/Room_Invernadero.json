@@ -7,9 +7,8 @@
 	"RoomPrice": 4000,
 	"HuecosDisponibles": 45,
 	"CapacidadPorDefecto": {
-		"Abonos": 8,
-		"Refrigeracion": 10,
-		"Electricidad": 5
+		"Agua": 1000,
+		"Refrigeracion": 3000
 	},
 	"BackGroundTileSet": "BGTileSet_Invernadero",
 	"BackgroundData": [

@@ -102,7 +102,6 @@ public class SalaScreen implements Screen, StageInterface {
         mcSotano.add("Sotano_PC");
         //Maquinas de recursos
         mcSotano.add("Recursos_Acondicionado");
-        mcSotano.add("Recursos_DepositoAgua");
         mcSotano.add("Recursos_Transformador");
 
         mcTiendaEnSala.put("Room_Sotano", mcSotano);
@@ -116,7 +115,6 @@ public class SalaScreen implements Screen, StageInterface {
         //Maquinas de recursos
         mcInverna.add("Recursos_Acondicionado");
         mcInverna.add("Recursos_DepositoAgua");
-        mcInverna.add("Recursos_Transformador");
 
         mcTiendaEnSala.put("Room_Invernadero", mcInverna);
 
