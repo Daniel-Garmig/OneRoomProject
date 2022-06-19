@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.clase.oneroomproject.Modelo.GameManager;
+import com.clase.oneroomproject.Modelo.Room;
 import com.clase.oneroomproject.Modelo.RoomLoader;
 
 import java.awt.event.ActionEvent;
@@ -125,9 +126,6 @@ public class MapaScreen implements Screen, StageInterface {
     @Override
     public void gestionEventos()
     {
-        //TODO cada btn cargará e iniciará una sala
-        //TODO Si un jugador tiene comprada una sala podrá cargar la información al hacer click sobre ella, sino le aparecera un dialog para comprarla
-
         /*
         //DEBUG: para ver donde haces click y colocar los botones en el mapa
         stage.addListener(new ClickListener()
@@ -155,7 +153,6 @@ public class MapaScreen implements Screen, StageInterface {
                 }else
                 {
                     Gdx.app.log("MapaScreen","Intento comprar "+nombreSala);
-                    //TODO: windowComprar
                     crearVentanaComprar(nombreSala);
 
                 }
@@ -169,16 +166,18 @@ public class MapaScreen implements Screen, StageInterface {
 
     public void crearVentanaComprar(final String nombreSala){
         final Window windowComprar = new Window("Comprar "+nombreSala,skin);
-        windowComprar.setSize(350f,100f);
-        windowComprar.align(Align.left);
-        //FIXME: comprobar precio en salas por defecto
-        Label precio = new Label("¿Comprar "+nombreSala+" por "+ 1000/*RoomLoader.getInstance().GetRoomByID(nombreSala).getRoomPrice()*/+"?",skin);
-        windowComprar.add(precio);
+
+        //FIXME: Codigo para cargar sala copiado de GameManage.ComprarRoom
+        RoomLoader rmLoader=RoomLoader.getInstance();
+        rmLoader.LoadRoomFromJSON(Gdx.files.internal("data/" + nombreSala + ".json"));
+        Label precio = new Label("¿Comprar "+nombreSala+" por "+ RoomLoader.getInstance().GetRoomByID(nombreSala).getRoomPrice()+"?",skin);
+        rmLoader.UnloadRoom(nombreSala);
+
+        windowComprar.add(precio).colspan(2);
         windowComprar.row();
 
         TextButton btnComprar= new TextButton("Comprar",skin);
         TextButton btnAtras= new TextButton("Atras",skin);
-
 
 
         btnComprar.addListener(new ClickListener(){

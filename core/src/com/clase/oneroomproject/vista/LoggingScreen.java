@@ -130,7 +130,8 @@ public class LoggingScreen implements Screen, StageInterface
 
         vGroup.setWidth(Gdx.graphics.getWidth());
         vGroup.setHeight(Gdx.graphics.getHeight());
-        vGroup.space(60f);
+        vGroup.space(50f);
+        vGroup.padTop(60f);
 
 
         HorizontalGroup hGroupNick= new HorizontalGroup();
@@ -142,10 +143,7 @@ public class LoggingScreen implements Screen, StageInterface
         hGroupBotones.align(Align.left);
 
         //FIXME: CONTROLAR ESPACIOS
-        float widthHGroup =100f;
-        hGroupNick.setWidth(widthHGroup);
-        hGroupPasswd.setWidth(widthHGroup);
-        hGroupBotones.setWidth(widthHGroup);
+        hGroupBotones.space(25f);
 
         hGroupNick.addActor(lbNick);
         hGroupNick.addActor(txtFieldNick);
@@ -159,11 +157,6 @@ public class LoggingScreen implements Screen, StageInterface
         vGroup.addActor(hGroupNick);
         vGroup.addActor(hGroupPasswd);
         vGroup.addActor(hGroupBotones);
-
-
-        //FIXME: CONTROLAR ESPACIOS(QUITAR ESTA LINEA)
-        vGroup.setDebug(true, true);
-
     }
 
     @Override
