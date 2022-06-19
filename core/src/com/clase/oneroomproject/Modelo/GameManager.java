@@ -143,6 +143,10 @@ public class GameManager
      */
     public void LoadGameFromJSON()
     {
+        //Limpiamos los datos que pueda haber.
+        saveData = null;
+        rmLoader.UnloadAllRooms();
+
         //Comprobamos que existe la partida.
         if(!ComprobarExistePartida())
         {

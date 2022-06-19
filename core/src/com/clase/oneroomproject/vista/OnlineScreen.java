@@ -6,11 +6,16 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Align;
+import com.clase.oneroomproject.Modelo.dbConnector;
 
 //TODO: Si no se tiene un usuario, se muestra un diálogo y se dice que primero tiene que crear una cuenta.
 
@@ -76,9 +81,23 @@ public class OnlineScreen implements Screen, StageInterface {
     {
         skin = game.skin;
         stage = new Stage();
+
         txtID = new TextField("Introduce el ID del jugador:", skin);
         btnAtras = new TextButton("Atras", skin);
         btnBuscar = new TextButton("Buscar", skin);
+
+        ClickListener textFieldClick = new ClickListener()
+        {
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+                super.clicked(event, x, y);
+                TextField f = (TextField) event.getListenerActor();
+                f.setText("");
+            }
+        };
+        txtID.addListener(textFieldClick);
+
     }
 
     @Override
@@ -111,5 +130,60 @@ public class OnlineScreen implements Screen, StageInterface {
                 game.setScreen(new MainMenuScreen(game));
             }
         });
+
+        btnBuscar.addListener(new ChangeListener()
+        {
+            @Override
+            public void changed(ChangeEvent event, Actor actor)
+            {
+                //Obtenemos el valor introducido.
+                String nombre = txtID.getText();
+
+                //Comprobamos que sea válido.
+                if(nombre.matches("[ a-zA-Z0-9]{0,2}"))
+                {
+                    CreateDialog("Nick no valido",
+                                 "El nick introducido no cumple las directivas",
+                                 "Ok.");
+                    return;
+                }
+
+                //Comprobamos si existe un usuario con ese nick.
+                if(dbConnector.ComprobarNickDisponible(nombre))
+                {
+                    //Si el nick está disponible, significa que n hay usuario.
+                    CreateDialog("El usuario no existe",
+                                 "No existe un usuario con el nombre " + nombre,
+                                 "Ok.");
+                    return;
+                }
+
+                //Intentamos cargar la partida del jugador indicado.
+                game.gm.LoadGameFromDB(nombre);
+                game.setScreen(new MapaScreen(game));
+
+
+            }
+        });
+    }
+
+    /**
+     * Crea un nuevo diálogo y lo añade al Stage.
+     * @param title Título del diálogo.
+     * @param text Texto que tiene
+     * @param textButton Texto en el botón.
+     */
+    public void CreateDialog(String title, String text, String textButton)
+    {
+        Dialog dg = new Dialog(title, skin);
+        dg.text(text);
+        dg.button(textButton);
+        //dg.layout();
+        //dg.validate();
+        dg.align(Align.center);
+        dg.pack();
+        dg.setPosition(((float)Gdx.graphics.getWidth()/2) - (dg.getWidth()/2),
+                       ((float)Gdx.graphics.getHeight()/2) - (dg.getHeight()/2));
+        stage.addActor(dg);
     }
 }

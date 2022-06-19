@@ -17,4 +17,6 @@ public class Save
      */
     public HashMap<String, Boolean> ownedRooms;
 
+    public boolean isOnline = false;
+
 }

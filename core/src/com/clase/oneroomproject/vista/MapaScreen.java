@@ -151,7 +151,7 @@ public class MapaScreen implements Screen, StageInterface {
             @Override
             public void changed(ChangeEvent event, Actor actor)
             {
-                String nombreSala="Room_"+actor.getName();
+                String nombreSala="Room_" + actor.getName();
                 //Comprobamos si tiene comprada la sala.
                 if (game.gm.saveData.ownedRooms.get(nombreSala))
                 {
@@ -159,6 +159,15 @@ public class MapaScreen implements Screen, StageInterface {
                     game.setScreen(new SalaScreen(game));
                 }else
                 {
+                    //Si estamos en Online, no se puede comprar la sala.
+                    if(game.gm.saveData.isOnline)
+                    {
+                        CreateDialog("Nope",
+                                     "Este usuario no posee esta sala." +
+                                             "\nNo podrás entrar hasta que la compre.",
+                                     "OK.");
+                        return;
+                    }
                     Gdx.app.log("MapaScreen","Intento comprar "+nombreSala);
                     crearVentanaComprar(nombreSala);
                 }

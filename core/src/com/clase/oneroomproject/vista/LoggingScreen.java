@@ -178,18 +178,18 @@ public class LoggingScreen implements Screen, StageInterface
                 //Comprobamos si el nick está disponible.
                 if(nick.matches("[ a-zA-Z0-9]{0,2}") || !dbConnector.ComprobarNickDisponible(nick))
                 {
-                    Dialog dgNick = new Dialog("Nick no disponible", skin);
-                    dgNick.text("El nick indicado no está disponible. \nElija otro");
-                    dgNick.button("Ok");
-                    stage.addActor(dgNick);
+                    CreateDialog("Nick no disponible",
+                                 "El nick indicado no está disponible. \nElija otro",
+                                 "Ok.");
+                    return;
                 }
 
                 if(pass.matches("[ a-zA-Z0-9]{0,2}"))
                 {
-                    Dialog dgPass = new Dialog("Contraseña no válida", skin);
-                    dgPass.text("Tiene que indicar una contraseña.");
-                    dgPass.button("Ok");
-                    stage.addActor(dgPass);
+                    CreateDialog("Contraseña no válida",
+                                 "Tiene que indicar una contraseña.",
+                                 "Ok");
+                    return;
                 }
 
                 game.gm.CrearNuevoUsuario(nick, pass);
@@ -211,5 +211,25 @@ public class LoggingScreen implements Screen, StageInterface
                 //FIXME: Se debería de eliminar la Screen en el SceneManager.
             }
         });
+    }
+
+    /**
+     * Crea un nuevo diálogo y lo añade al Stage.
+     * @param title Título del diálogo.
+     * @param text Texto que tiene
+     * @param textButton Texto en el botón.
+     */
+    public void CreateDialog(String title, String text, String textButton)
+    {
+        Dialog dg = new Dialog(title, skin);
+        dg.text(text);
+        dg.button(textButton);
+        //dg.layout();
+        //dg.validate();
+        dg.align(Align.center);
+        dg.pack();
+        dg.setPosition(((float)Gdx.graphics.getWidth()/2) - (dg.getWidth()/2),
+                       ((float)Gdx.graphics.getHeight()/2) - (dg.getHeight()/2));
+        stage.addActor(dg);
     }
 }

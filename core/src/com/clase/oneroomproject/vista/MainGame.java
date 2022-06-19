@@ -122,9 +122,11 @@ public class MainGame extends Game {
 
 		//Texturas maquinas recursos
 		tsm.loadTileSet("Assets/MCTileSet_Recursos.png", "MCTileSet_Recursos", 64, 64);
+
 		//Texturas Sotano
 		tsm.loadTileSet("Assets/SotanoTileSet.png", "BGTileSet_Sotano", 64,64);
 		tsm.loadTileSet("Assets/MCTileSet_Sotano.png", "MCTileSet_Sotano", 64, 64);
+
 		//Texturas Invernadero
 		tsm.loadTileSet("Assets/MCTileSet_Invernadero.png", "MCTileSet_Invernadero", 64, 64);
 		tsm.loadTileSet("Assets/InvernaderoTileSet.png", "BGTileSet_Invernadero", 64,64);

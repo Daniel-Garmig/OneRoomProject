@@ -6,6 +6,7 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonWriter;
 
 import java.sql.*;
+import java.util.HashMap;
 
 /**
  * Clase estática que realiza todas las interacciones con la BD.
@@ -489,6 +490,8 @@ public class dbConnector
         Statement stt = CrearStatement();
 
         Save s = new Save();
+        s.isOnline= true;
+        s.ownedRooms = new HashMap<>();
 
         //Obtenemos el dinero.
         String queryDinero = "SELECT dinero FROM partidas WHERE " +
@@ -502,11 +505,17 @@ public class dbConnector
                 Gdx.app.error("dbConnector", "Resultado Vacío. No existe partida con ID: " + idPartidaUser);
                 return null;
             }
-            s.dinero = rs.getInt(0);
+            s.dinero = rs.getInt("dinero");
         } catch (SQLException e)
         {
             Gdx.app.error("dbConnector", "No se ha podido cargar la partida del usuario " + username);
         }
+
+        //FIXME: Esto tendría que ser dinámico.
+        //  Por ahora, añadimos que todas las salas posibles sean false,
+        //  de tal forma, que si tiene una sala, esta la ponga en true.
+        s.ownedRooms.put("Room_Sotano", false);
+        s.ownedRooms.put("Room_Invernadero", false);
 
         //Obtenemos la lista de las salas que tiene el usuario.
         String querySalas = "SELECT nombre FROM salas WHERE " +
@@ -518,7 +527,7 @@ public class dbConnector
             //Iteramos por las salas, añadiéndolas al Save.
             while(rs.next())
             {
-                String nombreSala = rs.getString(0);
+                String nombreSala = rs.getString("nombre");
                 //Indicamos que tiene esa sala comprada.
                 s.ownedRooms.put(nombreSala, true);
             }
@@ -551,7 +560,7 @@ public class dbConnector
 
         //Obtenemos el JSON de la sala desde la DB.
         String datosJSON = "";
-        String query = "SELECT sala_data FROM salas WHERE" +
+        String query = "SELECT sala_data FROM salas WHERE " +
                 "nombre = '" + roomName + "' AND " +
                 "id_partida = " + idPartida + ";";
         try
@@ -562,7 +571,7 @@ public class dbConnector
                 Gdx.app.error("dbConnector", "Resultado Vacío. No se ha encontrado la sala de partida: " + idPartida);
                 return null;
             }
-            datosJSON = rs.getString(0);
+            datosJSON = rs.getString("sala_data");
         } catch (SQLException e)
         {
             Gdx.app.error("dbConnector", "No se han podido obtener los datos de la " + roomName +

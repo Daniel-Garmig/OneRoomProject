@@ -221,6 +221,12 @@ public class SalaScreen implements Screen, StageInterface {
         windowStats.setResizable(true);
         windowTienda.setResizable(true);
 
+        //En caso de ser Online, no se pueden comprar nuevas máquinas.
+        if(currentRoom.isEsOnline())
+        {
+            btnTienda.setDisabled(true);
+        }
+
         //Añadimos y configuramos las cosas de la barra superior.
         stage.addActor(barraGroup);
 
@@ -904,9 +910,8 @@ public class SalaScreen implements Screen, StageInterface {
 
             stage.addActor(mcBuyWindow);
 
-
             //Dada una máquina, la pondrá en modo espectral y comenzará el procedimiento de compra.
-        Gdx.app.log("SalaScreen", "Se ha comprado la máquina: " + mcName);
+            Gdx.app.log("SalaScreen", "Se ha comprado la máquina: " + mcName);
     }
 
     public void RenderModoEspectral()
@@ -1108,6 +1113,12 @@ public class SalaScreen implements Screen, StageInterface {
 
         mcInfoWindow.pack();
         stage.addActor(mcInfoWindow);
+
+        //Si estamos en Online, no puedes vender las máquinas.
+        if(currentRoom.isEsOnline())
+        {
+            eliminarBt.setDisabled(true);
+        }
 
 
         //Se comprobará esa posición para ver si hay una máquina.
